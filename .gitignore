@@ -1,6 +1,7 @@
 /vendor
 /application/cache/*
 /application/logs/*
+application/config/database.php
 .env
 .idea
 .vscode
