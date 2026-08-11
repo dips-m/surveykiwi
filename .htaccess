@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+
+    RewriteEngine On
+
+    RewriteBase /
+
+    # Remove index.php from URLs
+    RewriteCond %{THE_REQUEST} \s/+index\.php[/?\s] [NC]
+    RewriteRule ^index\.php(?:/(.*))?$ /$1 [R=301,L]
+
+    # Send all requests that are not real files/directories to Kohana
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+
+</IfModule>

@@ -1,5 +1,11 @@
 <?php defined('SYSPATH') or die('No direct script access.'); ?>
 
+<?php
+$current_controller = strtolower(
+    Request::current()->controller()
+);
+?>
+
 <aside
     id="sk-sidebar"
     class="sk-sidebar collapse in"
@@ -13,14 +19,14 @@
 
         <ul class="nav sk-nav">
 
-            <li class="active">
-                <a href="/">
+            <li class="<?php echo ($current_controller === 'dashboard') ? 'active' : ''; ?>">
+                <a href="<?php echo URL::site('dashboard'); ?>">
                     <span class="glyphicon glyphicon-dashboard"></span>
                     Dashboard
                 </a>
             </li>
 
-            <li>
+            <li class="<?php echo ($current_controller === 'survey') ? 'active' : ''; ?>">
                 <a href="<?php echo URL::site('survey'); ?>">
                     <span class="glyphicon glyphicon-list-alt"></span>
                     Surveys

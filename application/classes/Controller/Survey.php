@@ -1,81 +1,43 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
+
 class Controller_Survey extends Controller_Template
 {
     public $template = 'layout/master';
 
+
     /**
-     * Survey listing
+     * Survey listing.
      */
     public function action_index()
     {
-        $surveys = DB::select(
-                's.id',
-                's.title',
-                's.description',
-                's.status',
-                's.created_at',
+        $page = (int) $this->request->query('page');
 
-                array(
-                    DB::expr(
-                        '(SELECT COUNT(*)
-                          FROM survey_questions q
-                          WHERE q.survey_id = s.id)'
-                    ),
-                    'questions'
-                ),
+        if ($page < 1)
+        {
+            $page = 1;
+        }
 
-                array(
-                    DB::expr(
-                        '(SELECT COUNT(*)
-                          FROM survey_participants p
-                          WHERE p.survey_id = s.id)'
-                    ),
-                    'participants'
-                ),
+        $model = new Model_Survey;
 
-                array(
-                    DB::expr(
-                        "(SELECT frequency
-                          FROM survey_schedules sc
-                          WHERE sc.survey_id = s.id
-                          AND sc.is_active = 1
-                          ORDER BY sc.id DESC
-                          LIMIT 1)"
-                    ),
-                    'frequency'
-                )
-            )
-            ->from(array('surveys', 's'))
-            ->order_by('s.created_at', 'DESC')
-            ->execute()
-            ->as_array();
+        $result = $model->get_list($page);
 
         $this->template->content = View::factory('survey/index')
-            ->set('surveys', $surveys);
+            ->set('surveys', $result['items'])
+            ->set('pagination', $result);
     }
 
 
     /**
-     * Survey schedule page
+     * View survey details.
      */
-    public function action_schedule()
+    public function action_view()
     {
         $id = (int) $this->request->param('id');
 
-        if ($id <= 0)
-        {
-            throw HTTP_Exception::factory(
-                404,
-                'Survey not found.'
-            );
-        }
+        $model = new Model_Survey;
 
-        $survey = DB::select()
-            ->from('surveys')
-            ->where('id', '=', $id)
-            ->execute()
-            ->current();
+        $survey = $model->get_by_id($id);
 
         if ( ! $survey)
         {
@@ -85,7 +47,43 @@ class Controller_Survey extends Controller_Template
             );
         }
 
+        $questions = $model->get_questions($id);
+
+        $schedule = $model->get_active_schedule($id);
+
+        $participant_count = $model->get_participant_count($id);
+
+        $this->template->content = View::factory('survey/view')
+            ->set('survey', $survey)
+            ->set('questions', $questions)
+            ->set('schedule', $schedule)
+            ->set('participant_count', $participant_count);
+    }
+
+
+    /**
+     * Survey schedule page.
+     */
+    public function action_schedule()
+    {
+        $id = (int) $this->request->param('id');
+
+        $model = new Model_Survey;
+
+        $survey = $model->get_by_id($id);
+
+        if ( ! $survey)
+        {
+            throw HTTP_Exception::factory(
+                404,
+                'Survey not found.'
+            );
+        }
+
+        $schedule = $model->get_active_schedule($id);
+
         $this->template->content = View::factory('survey/schedule')
-            ->set('survey', $survey);
+            ->set('survey', $survey)
+            ->set('schedule', $schedule);
     }
 }

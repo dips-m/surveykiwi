@@ -91,6 +91,7 @@ if (isset($_SERVER['KOHANA_ENV']))
  */
 Kohana::init(array(
 	'base_url'   => '/',
+	'index_file' => FALSE,
 ));
 
 /**
@@ -130,6 +131,15 @@ Route::set('survey', 'survey')
     ->defaults(array(
         'controller' => 'survey',
         'action'     => 'index',
+    ));
+
+/**
+ * Survey view
+ */
+Route::set('survey_view', 'survey/view/<id>')
+    ->defaults(array(
+        'controller' => 'survey',
+        'action'     => 'view',
     ));
 
 /**

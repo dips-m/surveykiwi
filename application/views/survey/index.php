@@ -1,298 +1,320 @@
-<?php defined('SYSPATH') OR die('No direct script access.'); ?>
-
-<div class="container-fluid">
+<div class="sk-page-header">
 
     <div class="row">
-        <div class="col-md-12">
 
-            <div class="sk-page-header">
+        <div class="col-sm-12">
 
-                <div>
-                    <h2>Surveys</h2>
-
-                    <p class="text-muted">
-                        Create and manage your surveys.
-                    </p>
-                </div>
-
-                <div>
-                    <a
-                        href="<?php echo URL::site('survey/create'); ?>"
-                        class="btn btn-primary"
-                    >
-                        <span class="glyphicon glyphicon-plus"></span>
-                        Create Survey
-                    </a>
-                </div>
-
-            </div>
-
-        </div>
-    </div>
-
-
-    <?php if (empty($surveys)): ?>
-
-        <div class="sk-empty-state text-center">
-
-            <span class="glyphicon glyphicon-list-alt"></span>
-
-            <h3>No surveys yet</h3>
+            <h1>Surveys</h1>
 
             <p class="text-muted">
-                Create your first survey to get started.
+                Manage your surveys and schedules.
             </p>
 
-            <a
-                href="<?php echo URL::site('survey/create'); ?>"
-                class="btn btn-primary"
-            >
-                <span class="glyphicon glyphicon-plus"></span>
-                Create Survey
-            </a>
-
         </div>
 
-    <?php else: ?>
+    </div>
 
-        <div class="panel panel-default sk-survey-table">
+</div>
 
-            <div class="table-responsive">
 
-                <table class="table table-hover">
+<div class="panel panel-default">
 
-                    <thead class="table-header">
+    <div class="table-responsive">
+
+        <table class="table table-hover table-striped">
+
+            <thead>
+
+                <tr>
+
+                    <th width="60">#</th>
+
+                    <th>Survey</th>
+
+                    <th>Questions</th>
+
+                    <th>Recurring</th>
+
+                    <th>Participants</th>
+
+                    <th>Created</th>
+
+                    <th width="130">Actions</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                <?php if (empty($surveys)): ?>
+
+                    <tr>
+
+                        <td colspan="7" class="text-center">
+
+                            No surveys found.
+
+                        </td>
+
+                    </tr>
+
+                <?php else: ?>
+
+                    <?php foreach ($surveys as $index => $survey): ?>
+
+                        <?php
+                        $serial_number =
+                            (($pagination['current_page'] - 1)
+                            * $pagination['per_page'])
+                            + $index
+                            + 1;
+                        ?>
+
                         <tr>
 
-                            <th>Survey</th>
-
-                            <th>Questions</th>
-
-                            <th>Frequency</th>
-
-                            <th>Participants</th>
-
-                            <th>Created</th>
-
-                            <th>Status</th>
-
-                            <th class="text-right">
-                                Actions
-                            </th>
-
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        <?php foreach ($surveys as $survey): ?>
-
-                            <?php
-
-                            /*
-                             * Status
-                             */
-                            $status_class = 'label-default';
-
-                            if ($survey['status'] === 'published')
-                            {
-                                $status_class = 'label-success';
-                            }
-                            elseif ($survey['status'] === 'draft')
-                            {
-                                $status_class = 'label-warning';
-                            }
-                            elseif ($survey['status'] === 'closed')
-                            {
-                                $status_class = 'label-danger';
-                            }
+                            <td>
+                                <?php echo $serial_number; ?>
+                            </td>
 
 
-                            /*
-                             * Frequency
-                             */
-                            $frequency = 'Not scheduled';
+                            <td>
 
-                            if ( ! empty($survey['frequency']))
-                            {
-                                $frequency = ucfirst(
-                                    $survey['frequency']
-                                );
-                            }
-
-
-                            /*
-                             * Created date
-                             */
-                            $created = '-';
-
-                            if ( ! empty($survey['created_at']))
-                            {
-                                $created = date(
-                                    'M d, Y',
-                                    strtotime($survey['created_at'])
-                                );
-                            }
-
-                            ?>
-
-                            <tr>
-
-                                <!-- Survey -->
-
-                                <td>
-
-                                    <div class="sk-survey-name">
-
-                                        <span>
-                                            <?php
-                                            echo HTML::chars(
-                                                $survey['title']
-                                            );
-                                            ?>
-                                        </span>
-
-                                    </div>
-
-                                </td>
-
-
-                                <!-- Questions -->
-
-                                <td>
-
-                                    <span class="sk-table-count">
-
-                                        <?php
-                                        echo (int) $survey['questions'];
-                                        ?>
-
-                                    </span>
-
-                                </td>
-
-
-                                <!-- Frequency -->
-
-                                <td>
-
-                                    <?php if ($survey['frequency']): ?>
-
-                                        <span class="sk-frequency">
-
-                                            <span class="glyphicon glyphicon-repeat"></span>
-
-                                            <?php
-                                            echo HTML::chars(
-                                                $frequency
-                                            );
-                                            ?>
-
-                                        </span>
-
-                                    <?php else: ?>
-
-                                        <span class="text-muted">
-                                            Not scheduled
-                                        </span>
-
-                                    <?php endif; ?>
-
-                                </td>
-
-
-                                <!-- Participants -->
-
-                                <td>
-
-                                    <span class="sk-table-count">
-
-                                        <?php
-                                        echo (int) $survey['participants'];
-                                        ?>
-
-                                    </span>
-
-                                </td>
-
-
-                                <!-- Created -->
-
-                                <td>
-
+                                <strong>
                                     <?php
-                                    echo HTML::chars($created);
+                                    echo HTML::chars(
+                                        $survey['title']
+                                    );
                                     ?>
+                                </strong>
 
-                                </td>
+                                <?php if ( ! empty($survey['description'])): ?>
 
+                                    <br>
 
-                                <!-- Status -->
-
-                                <td>
-
-                                    <span
-                                        class="label <?php echo $status_class; ?>"
-                                    >
+                                    <small class="text-muted">
                                         <?php
                                         echo HTML::chars(
-                                            ucfirst($survey['status'])
+                                            $survey['description']
                                         );
                                         ?>
+                                    </small>
+
+                                <?php endif; ?>
+
+                            </td>
+
+
+                            <td>
+                                <?php
+                                echo (int) $survey['questions'];
+                                ?>
+                            </td>
+
+
+                            <td>
+
+                                <?php if ( ! empty($survey['frequency'])): ?>
+
+                                    <?php
+                                    echo HTML::chars(
+                                        ucfirst(
+                                            $survey['frequency']
+                                        )
+                                    );
+                                    ?>
+
+                                <?php else: ?>
+
+                                    <span class="text-muted">
+                                        No
                                     </span>
 
-                                </td>
+                                <?php endif; ?>
+
+                            </td>
 
 
-                                <!-- Actions -->
-
-                                <td class="text-right">
-
-                                    <div class="sk-table-actions">
-
-                                        <!-- View -->
-
-                                        <a
-                                            href="<?php echo URL::site(
-                                                'survey/view/'.$survey['id']
-                                            ); ?>"
-                                            class="sk-icon-action"
-                                            title="View Survey"
-                                            aria-label="View Survey"
-                                        >
-                                            <span class="glyphicon glyphicon-eye-open"></span>
-                                        </a>
+                            <td>
+                                <?php
+                                echo (int) $survey['participants'];
+                                ?>
+                            </td>
 
 
-                                        <!-- Schedule -->
+                            <td>
 
-                                        <a
-                                            href="<?php echo URL::site(
-                                                'survey/schedule/'.$survey['id']
-                                            ); ?>"
-                                            class="sk-icon-action"
-                                            title="Schedule Survey"
-                                            aria-label="Schedule Survey"
-                                        >
-                                            <span class="glyphicon glyphicon-calendar"></span>
-                                        </a>
+                                <?php
+                                if ( ! empty($survey['created_at']))
+                                {
+                                    echo HTML::chars(
+                                        date(
+                                            'M d, Y',
+                                            strtotime(
+                                                $survey['created_at']
+                                            )
+                                        )
+                                    );
+                                }
+                                else
+                                {
+                                    echo '-';
+                                }
+                                ?>
 
-                                    </div>
+                            </td>
 
-                                </td>
 
-                            </tr>
+                            <td>
 
-                        <?php endforeach; ?>
+                                <a
+                                    href="<?php
+                                    echo URL::site(
+                                        'survey/view/'
+                                        . (int) $survey['id']
+                                    );
+                                    ?>"
+                                    class="btn btn-xs btn-default"
+                                    title="View Survey"
+                                >
+                                    <span
+                                        class="glyphicon glyphicon-eye-open"
+                                    ></span>
+                                </a>
 
-                    </tbody>
 
-                </table>
+                                <a
+                                    href="<?php
+                                    echo URL::site(
+                                        'survey/schedule/'
+                                        . (int) $survey['id']
+                                    );
+                                    ?>"
+                                    class="btn btn-xs btn-default"
+                                    title="Schedule Survey"
+                                >
+                                    <span
+                                        class="glyphicon glyphicon-calendar"
+                                    ></span>
+                                </a>
 
-            </div>
+                            </td>
+
+                        </tr>
+
+                    <?php endforeach; ?>
+
+                <?php endif; ?>
+
+            </tbody>
+
+        </table>
+        
+        <?php
+        $current_page = (int) $pagination['current_page'];
+        $total_pages = (int) $pagination['total_pages'];
+
+        $total = (int) $pagination['total'];
+        $per_page = (int) $pagination['per_page'];
+
+        if ($total > 0)
+        {
+            $start = (($current_page - 1) * $per_page) + 1;
+
+            $end = min(
+                $current_page * $per_page,
+                $total
+            );
+        }
+        else
+        {
+            $start = 0;
+            $end = 0;
+        }
+        ?>
+
+        <div class="sk-pagination">
+
+            <p class="sk-pagination-info">
+                Showing
+                <?php echo $start; ?>
+                -
+                <?php echo $end; ?>
+                of
+                <?php echo $total; ?>
+                surveys
+            </p>
+
+
+            <?php if ($total_pages > 1): ?>
+
+                <ul class="pagination pagination-sm sk-pagination-links">
+
+                    <?php if ($current_page > 1): ?>
+
+                        <li>
+                            <a
+                                href="<?php
+                                echo URL::site(
+                                    'survey?page=' . ($current_page - 1)
+                                );
+                                ?>"
+                                aria-label="Previous"
+                            >
+                                &laquo;
+                            </a>
+                        </li>
+
+                    <?php endif; ?>
+
+
+                    <?php for ($i = 1; $i <= $total_pages; $i++): ?>
+
+                        <li
+                            class="<?php
+                            echo ($i === $current_page)
+                                ? 'active'
+                                : '';
+                            ?>"
+                        >
+                            <a
+                                href="<?php
+                                echo URL::site(
+                                    'survey?page=' . $i
+                                );
+                                ?>"
+                            >
+                                <?php echo $i; ?>
+                            </a>
+                        </li>
+
+                    <?php endfor; ?>
+
+
+                    <?php if ($current_page < $total_pages): ?>
+
+                        <li>
+                            <a
+                                href="<?php
+                                echo URL::site(
+                                    'survey?page=' . ($current_page + 1)
+                                );
+                                ?>"
+                                aria-label="Next"
+                            >
+                                &raquo;
+                            </a>
+                        </li>
+
+                    <?php endif; ?>
+
+                </ul>
+
+            <?php endif; ?>
 
         </div>
 
-    <?php endif; ?>
+    </div>
 
 </div>

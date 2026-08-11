@@ -11,11 +11,27 @@
 docker compose up --build -d
 ```
 
-# Configuration
+## Project Setup
+
+### 1. Clone the Repository
+
+Clone the project from GitHub:
+
+```bash
+git clone https://github.com/dips-m/surveykiwi.git
+cd surveykiwi
+```
+
+### 2. Add system file
+
+```bash
+git submodule init
+git submodule update
+```
+
+### 3. Configuration Cookie Salt
 
 Before running the application, update the following configuration values.
-
-## 1. Cookie Salt
 
 Open:
 
