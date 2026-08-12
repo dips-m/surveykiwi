@@ -162,6 +162,16 @@
                                     echo '-';
                                 }
                                 ?>
+                                        <a
+                                            href="<?php echo URL::site(
+                                                'schedule/'.$survey['id']
+                                            ); ?>"
+                                            class="sk-icon-action"
+                                            title="Schedule Survey"
+                                            aria-label="Schedule Survey"
+                                        >
+                                            <span class="glyphicon glyphicon-calendar"></span>
+                                        </a>
 
                             </td>
 
@@ -187,7 +197,7 @@
                                 <a
                                     href="<?php
                                     echo URL::site(
-                                        'survey/schedule/'
+                                        'schedule/'
                                         . (int) $survey['id']
                                     );
                                     ?>"

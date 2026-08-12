@@ -124,6 +124,17 @@ Kohana::modules(array(
 	// 'userguide'  => MODPATH.'userguide',  // User guide and API documentation
 	));
 
+// Routes
+
+/**
+ * Survey schedule route (e.g., /schedule/index/1 or /schedule/1)
+ */
+Route::set('schedule', 'schedule(/<id>)')
+    ->defaults(array(
+        'controller' => 'schedule',
+        'action'     => 'index',
+    ));
+
 /**
  * Survey list
  */

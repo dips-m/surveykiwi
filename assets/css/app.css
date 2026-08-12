@@ -814,6 +814,43 @@ body {
     color: black;
 }
 
+.participant-actions,
+.participant-edit-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.participant-actions button,
+.participant-edit-actions button {
+    border: 0;
+    background: transparent;
+    padding: 2px;
+    margin: 0;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.participant-edit-btn,
+.participant-save-btn {
+    color: #198754;
+}
+
+.participant-delete-btn,
+.participant-cancel-btn {
+    color: #293241;
+}
+
+.participant-actions button:hover,
+.participant-edit-actions button:hover {
+    color: #334155;
+}
+
+.participant-actions button:focus,
+.participant-edit-actions button:focus {
+    outline: none;
+}
+
 @media (max-width: 767px) {
 
     .sk-survey-view-header {
