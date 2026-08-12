@@ -11,6 +11,7 @@
 
 ?>
 
+
 <div class="sk-page-header">
     <div class="row">
         <div class="col-sm-12">
@@ -335,7 +336,7 @@
     <div class="col-md-6">
 
         <div class="panel panel-default"
-             style="border-radius: 8px; border-color: #e2e8f0; box-shadow: none;">
+             style="border-radius: 8px; border-color: #e2e8f0; box-shadow: none; height: auto; min-height: 655px;">
 
             <!-- Header -->
             <div class="panel-heading"
@@ -450,7 +451,7 @@
 
                 <?php else: ?>
 
-                    <div style="padding: 40px 20px; text-align: center;">
+                    <div style="padding: 100px 20px; text-align: center;">
 
                         <i class="glyphicon glyphicon-calendar"
                            style="font-size: 30px; color: #cbd5e1; margin-bottom: 10px;"></i>
@@ -480,7 +481,7 @@
     <div class="col-md-6">
 
         <div class="panel panel-default"
-             style="border-radius: 8px; border-color: #e2e8f0; box-shadow: none;">
+             style="border-radius: 8px; border-color: #e2e8f0; box-shadow: none; height: auto; min-height: 655px;">
 
             <!-- Header -->
             <div class="panel-heading"
@@ -510,10 +511,72 @@
 
                 </div>
 
+
             </div>
 
             <!-- Body -->
             <div class="panel-body" style="padding: 0;">
+                    <!-- Add Participant -->
+    <div style="padding: 12px 15px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+
+        <form id="add-participant-form"
+              class="form-inline"
+              style="display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;">
+
+                  <input
+                    type="hidden"
+                    name="survey_id"
+                    value="<?= (int) $survey['id'] ?>"
+                >
+
+            <input
+                type="text"
+                name="first_name"
+                id="participant-first-name"
+                class="form-control input-field"
+                placeholder="First Name"
+                required
+                style="width: 160px;"
+            >
+
+            <input
+                type="text"
+                name="last_name"
+                id="participant-last-name"
+                class="form-control input-field"
+                placeholder="Last Name"
+                required
+                style="width: 160px;"
+            >
+
+            <input
+                type="email"
+                name="email"
+                id="participant-email"
+                class="form-control input-field"
+                placeholder="Email"
+                required
+                style="width: 240px;"
+            >
+
+            <button
+                type="submit"
+                id="add-participant-btn"
+                class="dt-button"
+                title="Add Participant"
+                style="display: inline-flex; align-items: center; justify-content: center;"
+            >
+                Add
+            </button>
+
+        </form>
+
+        <div
+            id="participant-add-message"
+            style="margin-top: 6px; font-size: 12px;"
+        ></div>
+
+    </div>
 
                 <?php if (!empty($participants)): ?>
 
@@ -539,30 +602,110 @@
                                     <th style="padding: 10px 12px; color: #64748b;">
                                         Email
                                     </th>
-
+                                    <th class="px-4 py-3 text-right text-sm font-medium text-slate-600">
+                                        Actions
+                                    </th>
                                 </tr>
                             </thead>
-
                             <tbody id="participants-list">
 
                                 <?php foreach ($participants as $index => $p): ?>
 
-                                    <tr class="participant-row">
+                                    <tr
+                                        class="participant-row"
+                                        data-participant-id="<?php echo (int) $p['id']; ?>"
+                                    >
 
                                         <td style="padding: 10px 12px; color: #94a3b8;">
                                             <?php echo ($index + 1); ?>
                                         </td>
 
+                                        <!-- First Name -->
                                         <td style="padding: 10px 12px; color: #334155;">
-                                            <?php echo HTML::chars($p['first_name']); ?>
+
+                                            <span class="participant-first-name-text">
+                                                <?php echo HTML::chars($p['first_name']); ?>
+                                            </span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control participant-first-name-input hidden"
+                                                value="<?php echo HTML::chars($p['first_name']); ?>"
+                                            >
+
                                         </td>
 
+                                        <!-- Last Name -->
                                         <td style="padding: 10px 12px; color: #334155;">
-                                            <?php echo HTML::chars($p['last_name']); ?>
+
+                                            <span class="participant-last-name-text">
+                                                <?php echo HTML::chars($p['last_name']); ?>
+                                            </span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control participant-last-name-input hidden"
+                                                value="<?php echo HTML::chars($p['last_name']); ?>"
+                                            >
+
                                         </td>
 
+                                        <!-- Email -->
                                         <td style="padding: 10px 12px; color: #64748b;">
-                                            <?php echo HTML::chars($p['email']); ?>
+
+                                            <span class="participant-email-text">
+                                                <?php echo HTML::chars($p['email']); ?>
+                                            </span>
+
+                                            <input
+                                                type="email"
+                                                class="form-control participant-email-input hidden"
+                                                value="<?php echo HTML::chars($p['email']); ?>"
+                                            >
+
+                                        </td>
+
+                                        <!-- Actions -->
+                                        <td class="px-4 py-3 text-right whitespace-nowrap">
+
+                                            <!-- Normal actions -->
+                                            <div class="participant-actions">
+
+                                                <button
+                                                    type="button"
+                                                    class="participant-edit-btn"
+                                                >
+                                                    <i class="glyphicon glyphicon-pencil"></i>
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    class="participant-delete-btn dt-button"
+                                                >
+                                                    <i class="glyphicon glyphicon-trash"></i>
+                                                </button>
+
+                                            </div>
+
+                                            <!-- Edit actions -->
+                                            <div class="participant-edit-actions hidden">
+
+                                                <button
+                                                    type="button"
+                                                    class="participant-save-btn dt-button"
+                                                >
+                                                    <i class="glyphicon glyphicon-ok"></i>
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    class="participant-cancel-btn dt-button"
+                                                >
+                                                    <i class="glyphicon glyphicon-remove"></i>
+                                                </button>
+
+                                            </div>
+
                                         </td>
 
                                     </tr>
@@ -570,7 +713,6 @@
                                 <?php endforeach; ?>
 
                             </tbody>
-
                         </table>
                     </div>
 
@@ -756,3 +898,13 @@ $(document).ready(function() {
 
 <!-- Load the external JavaScript file -->
 <script type="text/javascript" src="<?php echo URL::base(); ?>assets/js/schedule-preview.js"></script>
+
+<script>
+    window.participantUrls = {
+        add: '<?= URL::site('participant/add') ?>',
+        edit: '<?= URL::site('participant/edit') ?>',
+        delete: '<?= URL::site('participant/delete') ?>'
+    };
+</script>
+
+<script type="text/javascript" src="<?php echo URL::base(); ?>assets/js/participant.js"></script>

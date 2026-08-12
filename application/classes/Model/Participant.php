@@ -57,8 +57,7 @@ class Model_Participant
     {
         $survey_id = (int) $survey_id;
 
-        if ($survey_id <= 0)
-        {
+        if ($survey_id <= 0) {
             throw new Exception('Invalid survey.');
         }
 
@@ -66,8 +65,7 @@ class Model_Participant
             empty($file) ||
             !isset($file['error']) ||
             $file['error'] !== UPLOAD_ERR_OK
-        )
-        {
+        ) {
             throw new Exception('Unable to upload CSV file.');
         }
 
@@ -75,44 +73,37 @@ class Model_Participant
             pathinfo($file['name'], PATHINFO_EXTENSION)
         );
 
-        if ($extension !== 'csv')
-        {
+        if ($extension !== 'csv') {
             throw new Exception('Please upload a valid CSV file.');
         }
 
-        if (empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name']))
-        {
+        if (empty($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
             throw new Exception('Invalid CSV file.');
         }
 
         $handle = fopen($file['tmp_name'], 'r');
 
-        if (!$handle)
-        {
+        if (!$handle) {
             throw new Exception('Unable to open CSV file.');
         }
 
         $participants = array();
         $row_number = 0;
 
-        while (($data = fgetcsv($handle, 1000, ',')) !== FALSE)
-        {
+        while (($data = fgetcsv($handle, 1000, ',')) !== FALSE) {
             $row_number++;
 
             // Skip CSV header
-            if ($row_number === 1)
-            {
+            if ($row_number === 1) {
                 continue;
             }
 
             // Skip empty rows
-            if (empty($data))
-            {
+            if (empty($data)) {
                 continue;
             }
 
-            if (count($data) < 3)
-            {
+            if (count($data) < 3) {
                 fclose($handle);
 
                 throw new Exception(
@@ -124,8 +115,7 @@ class Model_Participant
             $last_name  = trim($data[1]);
             $email      = trim($data[2]);
 
-            if (!filter_var($email, FILTER_VALIDATE_EMAIL))
-            {
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 fclose($handle);
 
                 throw new Exception(
@@ -143,8 +133,7 @@ class Model_Participant
 
         fclose($handle);
 
-        if (empty($participants))
-        {
+        if (empty($participants)) {
             throw new Exception(
                 'The CSV file does not contain any valid participants.'
             );
@@ -158,8 +147,7 @@ class Model_Participant
             ->where('survey_id', '=', $survey_id)
             ->execute();
 
-        foreach ($participants as $participant)
-        {
+        foreach ($participants as $participant) {
             DB::insert('survey_participants', array(
                 'survey_id',
                 'first_name',
@@ -180,5 +168,93 @@ class Model_Participant
         }
 
         return count($participants);
+    }
+
+    public function create($survey_id, $first_name, $last_name, $email)
+    {
+        $survey_id = (int) $survey_id;
+
+        if ($survey_id <= 0)
+        {
+            throw new Exception('Invalid survey.');
+        }
+
+        $first_name = trim($first_name);
+        $last_name = trim($last_name);
+        $email = trim($email);
+
+        if ($first_name === '')
+        {
+            throw new Exception('First name is required.');
+        }
+
+        if ($last_name === '')
+        {
+            throw new Exception('Last name is required.');
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+        {
+            throw new Exception('Please enter a valid email address.');
+        }
+
+        list($participant_id, $rows) = DB::insert(
+            'survey_participants',
+            array(
+                'survey_id',
+                'first_name',
+                'last_name',
+                'email',
+                'created_at',
+                'updated_at'
+            )
+        )
+            ->values(array(
+                $survey_id,
+                $first_name,
+                $last_name,
+                $email,
+                date('Y-m-d H:i:s'),
+                date('Y-m-d H:i:s')
+            ))
+            ->execute();
+
+        return $participant_id;
+    }
+
+    /**
+     * Update a participant.
+     *
+     * @param integer $id
+     * @param array   $data
+     *
+     * @return integer
+     */
+    public function update($id, $data)
+    {
+        return DB::update('survey_participants')
+            ->set(array(
+                'first_name' => $data['first_name'],
+                'last_name'  => $data['last_name'],
+                'email'      => $data['email'],
+                'updated_at' => date('Y-m-d H:i:s')
+            ))
+            ->where('id', '=', (int) $id)
+            ->execute();
+    }
+
+
+    /**
+     * Delete a participant.
+     *
+     * @param integer $id
+     *
+     * @return integer
+     */
+    public function delete($id)
+    {
+        return DB::delete('survey_participants')
+            ->where('id', '=', (int) $id)
+            ->execute();
     }
 }
