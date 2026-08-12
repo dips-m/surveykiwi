@@ -80,6 +80,18 @@ Update the database credentials:
 ),
 ```
 
+## Email Configuration
+
+Before testing email notifications, configure Mailtrap SMTP credentials in:
+
+```text
+application/config/email.php
+```
+```php
+'username' => 'YOUR_MAILTRAP_USERNAME',
+'password' => 'YOUR_MAILTRAP_PASSWORD',
+```
+
 ### Docker Development Defaults
 
 | Setting | Value |
