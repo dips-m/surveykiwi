@@ -48,6 +48,7 @@ class Controller_Schedule extends Controller_Template
         }
 
         $id = (int) $this->request->param('id');
+        $schedule_id = (int) $this->request->post('schedule_id');
 
         try {
             $this->_get_survey_or_404($id);
@@ -150,6 +151,7 @@ class Controller_Schedule extends Controller_Template
             // Check existing schedule
             $existing = DB::select('id')
                 ->from('survey_schedules')
+                ->where('id', '=', $schedule_id)
                 ->where('survey_id', '=', $id)
                 ->execute()
                 ->current();
@@ -167,6 +169,7 @@ class Controller_Schedule extends Controller_Template
                         'is_active' => $is_active,
                         'updated_at' => date('Y-m-d H:i:s')
                     ))
+                    ->where('id', '=', $schedule_id)
                     ->where('survey_id', '=', $id)
                     ->execute();
 
@@ -346,50 +349,114 @@ private function _import_csv_participants($survey_id, $file)
     return count($new_participants);
 }
 
-    private function calculate_future_dates($frequency, $start_date_val, $end_date_val)
+private function calculate_future_dates($frequency, $start_date_val, $end_date_val)
+{
+    if (empty($frequency) || empty($start_date_val) || empty($end_date_val))
     {
+        return array();
+    }
 
-        if (empty($frequency) || empty($start_date_val) || empty($end_date_val))
+    $start_time = strtotime($start_date_val);
+    $schedule_end_time = strtotime($end_date_val);
+    $current_datetime = time();
+
+    $future_dates = array();
+
+    // Keep the configured times
+    $start_time_of_day = date('H:i:s', $start_time);
+    $end_time_of_day = date('H:i:s', $schedule_end_time);
+
+    if ($frequency === 'once')
+    {
+        // Only show if the schedule has not ended
+        if ($schedule_end_time >= $current_datetime)
         {
-            return array();
-        }
-
-        $current_time = strtotime($start_date_val);
-        $end_time = strtotime($end_date_val);
-        $future_dates = array();
-
-        if ($frequency === 'once')
-        {
-            $future_dates[] = date('Y-m-d H:i:s', $current_time);
-        }
-        else
-        {
-            while ($current_time <= $end_time && count($future_dates) < 50) // Safety limit of 50 occurrences
-            {
-                $future_dates[] = date('Y-m-d H:i:s', $current_time);
-
-                switch ($frequency)
-                {
-                    case 'daily':
-                        $current_time = strtotime('+1 day', $current_time);
-                        break;
-                    case 'weekly':
-                        $current_time = strtotime('+1 week', $current_time);
-                        break;
-                    case 'monthly':
-                        $current_time = strtotime('+1 month', $current_time);
-                        break;
-                    case 'quarterly':
-                        $current_time = strtotime('+3 months', $current_time);
-                        break;
-                    default:
-                        break 2; // Break out of switch and loop if unknown frequency
-                }
-            }
+            $future_dates[] = array(
+                'start_date' => date('Y-m-d H:i:s', $start_time),
+                'end_date'   => date('Y-m-d H:i:s', $schedule_end_time)
+            );
         }
 
         return $future_dates;
     }
+
+    $current_occurrence = $start_time;
+
+    while (
+        $current_occurrence <= $schedule_end_time &&
+        count($future_dates) < 50
+    )
+    {
+        $occurrence_date = date(
+            'Y-m-d',
+            $current_occurrence
+        );
+
+        $occurrence_start = strtotime(
+            $occurrence_date . ' ' . $start_time_of_day
+        );
+
+        $occurrence_end = strtotime(
+            $occurrence_date . ' ' . $end_time_of_day
+        );
+
+        /*
+         * Only include upcoming occurrences.
+         *
+         * If the occurrence has already ended,
+         * skip it.
+         */
+        if ($occurrence_end >= $current_datetime)
+        {
+            $future_dates[] = array(
+                'start_date' => date(
+                    'Y-m-d H:i:s',
+                    $occurrence_start
+                ),
+                'end_date' => date(
+                    'Y-m-d H:i:s',
+                    $occurrence_end
+                )
+            );
+        }
+
+        switch ($frequency)
+        {
+            case 'daily':
+                $current_occurrence = strtotime(
+                    '+1 day',
+                    $current_occurrence
+                );
+                break;
+
+            case 'weekly':
+                $current_occurrence = strtotime(
+                    '+1 week',
+                    $current_occurrence
+                );
+                break;
+
+            case 'monthly':
+                $current_occurrence = strtotime(
+                    '+1 month',
+                    $current_occurrence
+                );
+                break;
+
+            case 'quarterly':
+                $current_occurrence = strtotime(
+                    '+3 months',
+                    $current_occurrence
+                );
+                break;
+
+            default:
+                break 2;
+        }
+    }
+
+    return $future_dates;
+}
     
     private function _get_survey_or_404($id)
     {

@@ -49,7 +49,7 @@
                 <!-- Direct Non-AJAX Schedule Form -->
                 <form id="scheduleForm" action="<?php echo URL::site('schedule/save/' . $survey['id']); ?>" method="POST" enctype="multipart/form-data">
                     <div class="row" style="display: flex; flex-wrap: wrap; align-items: flex-start;">
-
+                    <input type="hidden" id="schedule_id" name="schedule_id" value="<?php echo !empty($schedule['id']) ? (int) $schedule['id'] : 0; ?>">
                         <!-- Frequency Selection -->
                         <div id="group-frequency" class="col-md-4" style="padding-right: 10px; padding-left: 10px;">
                             <label for="frequency" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">Frequency <span class="text-danger">*</span></label>
@@ -154,6 +154,15 @@
             </span>
 
         </div>
+
+        <?php if (count($participants) > 0): ?>
+    <span class="text-warning"
+          style="font-size:12px; display:block; margin-top:6px;">
+        <i class="glyphicon glyphicon-warning-sign"></i>
+        Note: Uploading a new CSV will delete the existing
+        <?php echo count($participants); ?> participants.
+    </span>
+<?php endif; ?>
 
         <span id="err-participants-file"
               class="help-block text-danger"
@@ -373,18 +382,22 @@
                                     </th>
 
                                     <th style="padding: 10px 15px; color: #64748b;">
-                                        Execution Date & Time
+                                        Start Date
                                     </th>
 
-                                    <th style="width: 90px; padding: 10px 15px; color: #64748b;">
-                                        Status
+                                    <th style="padding: 10px 15px; color: #64748b;">
+                                        Start Time
+                                    </th>
+
+                                    <th style="padding: 10px 15px; color: #64748b;">
+                                        End Time
                                     </th>
                                 </tr>
                             </thead>
 
                             <tbody id="schedule-list">
 
-                                <?php foreach ($scheduleDates as $index => $date_str): ?>
+                                <?php foreach ($scheduleDates as $index => $scheduleValue): ?>
 
                                     <tr class="schedule-row">
 
@@ -394,15 +407,31 @@
 
                                         <td style="padding: 11px 15px;">
                                             <strong style="color: #334155;">
-                                                <?php echo HTML::chars($date_str); ?>
+                                                <?php
+                                                echo date(
+                                                    'd M Y',
+                                                    strtotime($scheduleValue['start_date'])
+                                                );
+                                                ?>
                                             </strong>
                                         </td>
 
                                         <td style="padding: 11px 15px;">
-                                            <span class="label label-success"
-                                                  style="font-size: 10px; padding: 4px 7px;">
-                                                Scheduled
-                                            </span>
+                                            <?php
+                                            echo date(
+                                                'h:i A',
+                                                strtotime($scheduleValue['start_date'])
+                                            );
+                                            ?>
+                                        </td>
+
+                                        <td style="padding: 11px 15px;">
+                                            <?php
+                                            echo date(
+                                                'h:i A',
+                                                strtotime($scheduleValue['end_date'])
+                                            );
+                                            ?>
                                         </td>
 
                                     </tr>

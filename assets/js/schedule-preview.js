@@ -21,8 +21,9 @@ function clearFieldError(fieldId) {
     $('#err-' + fieldId).hide().text('');
 }
 
-$(document).ready(function() {
 
+
+$(document).ready(function() {
     // Format datetime-local value
     function formatLocalDateTime(date) {
         var pad = function(n) {
@@ -35,22 +36,85 @@ $(document).ready(function() {
             pad(date.getHours()) + ':' +
             pad(date.getMinutes());
     }
-
-
+    
     // Prevent selecting past date/time
     var now = new Date();
     var minDateTimeString = formatLocalDateTime(now);
+   
+    function updateEndDateMin() {
+        var startDateVal = $('#start_date').val();
+        var frequencyVal = $('#frequency').val();
+
+        if (startDateVal) {
+            var startDate = new Date(startDateVal);
+
+            if (frequencyVal === 'once') {
+
+                // Once: end date must be the same date as start date
+                var startDateOnly = startDateVal.substring(0, 10);
+
+                // Keep current end time if already selected
+                var currentEndVal = $('#end_date').val();
+                var endTime = '00:00';
+
+                if (currentEndVal) {
+                    endTime = currentEndVal.substring(11, 16);
+                }
+
+                var sameDayEndDate = startDateOnly + 'T' + endTime;
+
+                $('#end_date')
+                    .attr('min', startDateOnly + 'T00:00')
+                    .attr('max', startDateOnly + 'T23:59');
+
+                // If existing end date is different, move it to start date
+                if (!currentEndVal || currentEndVal.substring(0, 10) !== startDateOnly) {
+                    $('#end_date').val(sameDayEndDate);
+                }
+
+            } else {
+
+                // Other frequencies:
+                // Minimum end date = next calendar day at 00:00
+                startDate.setDate(startDate.getDate() + 1);
+                startDate.setHours(0, 0, 0, 0);
+
+                var minEndDate = formatLocalDateTime(startDate);
+
+                $('#end_date')
+                    .attr('min', minEndDate)
+                    .removeAttr('max');
+            }
+
+        } else {
+
+            $('#end_date')
+                .attr('min', minDateTimeString)
+                .removeAttr('max');
+        }
+    }
+
+    var scheduleId = parseInt($('#schedule_id').val(), 10) || 0;
+    var isEdit = scheduleId > 0;
 
     $('#start_date').attr('min', minDateTimeString);
     $('#end_date').attr('min', minDateTimeString);
 
+    updateEndDateMin();
 
     // Clear errors
     $('#frequency').on('change', function() {
         clearFieldError('frequency');
+        updateEndDateMin();
     });
 
-    $('#start_date, #end_date').on('input change', function() {
+    $('#start_date').on('input change', function() {
+        clearFieldError('start-date');
+        updateEndDateMin();
+    });
+
+
+    $('#end_date').on('input change', function() {
         clearFieldError($(this).attr('id'));
     });
 
@@ -148,7 +212,7 @@ $(document).ready(function() {
 
             hasError = true;
 
-        } else if (startDate < currentDate) {
+        } else if (!isEdit && startDate < currentDate) {
 
             showFieldError(
                 'start-date',
