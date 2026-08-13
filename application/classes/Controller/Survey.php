@@ -5,7 +5,7 @@ class Controller_Survey extends Controller_Template
     public $template = 'layout/master';
 
     /**
-     * Survey listing
+     * Survey listing.
      */
     public function action_index()
     {
@@ -20,9 +20,10 @@ class Controller_Survey extends Controller_Template
 
         $result = $model->get_list($page);
 
-        $this->template->content = View::factory('survey/index')
-            ->set('surveys', $result['items'])
-            ->set('pagination', $result);
+        $this->template->content =
+            View::factory('survey/index')
+                ->set('surveys', $result['items'])
+                ->set('pagination', $result);
     }
 
 
@@ -39,24 +40,34 @@ class Controller_Survey extends Controller_Template
 
         if ( ! $survey)
         {
-            throw HTTP_Exception::factory(
-                404,
-                'Survey not found.'
+            return $this->_error_page(
+                'Survey Not Found',
+                'Sorry, the survey you are looking for '
+                . 'does not exist or is no longer available.',
+                404
             );
         }
 
-        $questions = $model->get_questions($id);
+        $questions =
+            $model->get_questions($id);
 
-        $schedule = $model->get_active_schedule($id);
+        $schedule =
+            $model->get_active_schedule($id);
 
-        $participant_count = $model->get_participant_count($id);
+        $participant_count =
+            $model->get_participant_count($id);
 
-        $this->template->content = View::factory('survey/view')
-            ->set('survey', $survey)
-            ->set('questions', $questions)
-            ->set('schedule', $schedule)
-            ->set('participant_count', $participant_count);
+        $this->template->content =
+            View::factory('survey/view')
+                ->set('survey', $survey)
+                ->set('questions', $questions)
+                ->set('schedule', $schedule)
+                ->set(
+                    'participant_count',
+                    $participant_count
+                );
     }
+
 
     /**
      * Survey schedule page.
@@ -71,16 +82,44 @@ class Controller_Survey extends Controller_Template
 
         if ( ! $survey)
         {
-            throw HTTP_Exception::factory(
-                404,
-                'Survey not found.'
+            return $this->_error_page(
+                'Survey Not Found',
+                'Sorry, the survey you are looking for '
+                . 'does not exist or is no longer available.',
+                404
             );
         }
 
-        $schedule = $model->get_active_schedule($id);
+        $schedule =
+            $model->get_active_schedule($id);
 
-        $this->template->content = View::factory('survey/schedule')
-            ->set('survey', $survey)
-            ->set('schedule', $schedule);
+        $this->template->content =
+            View::factory('survey/schedule')
+                ->set('survey', $survey)
+                ->set('schedule', $schedule);
+    }
+
+    /**
+     * Display common error page.
+     *
+     * @param string  $title
+     * @param string  $message
+     * @param integer $status
+     * @return void
+     */
+    protected function _error_page(
+        $title,
+        $message,
+        $status = 404
+    )
+    {
+        $this->response->status(
+            (int) $status
+        );
+
+        $this->template->content =
+            View::factory('errors/message')
+                ->set('title', $title)
+                ->set('message', $message);
     }
 }

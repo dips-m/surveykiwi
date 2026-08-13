@@ -4,58 +4,31 @@ class Controller_Dashboard extends Controller
 {
     public function action_index()
     {
-        // Temporary UI data.
-        // This will later come from Survey models/database queries.
-        $surveys = DB::select(
-                's.id',
-                's.title',
-                's.description',
-                's.status',
-                array(DB::expr('COUNT(DISTINCT q.id)'), 'questions')
-            )
-            ->from(array('surveys', 's'))
-            ->join(array('survey_questions', 'q'), 'LEFT')
-                ->on('q.survey_id', '=', 's.id')
-            ->group_by(
-                's.id',
-                's.title',
-                's.description',
-                's.status'
-            )
-            ->order_by('s.id', 'DESC')
-            ->execute()
-            ->as_array();
+        $survey_model = new Model_Survey();
 
-        $published = 0;
-        $draft = 0;
-        $closed = 0;
+        $surveys = $survey_model->get_dashboard_surveys();
 
-        foreach ($surveys as $survey)
-        {
+        $counts = $survey_model->get_dashboard_counts(
+            $surveys
+        );
 
-            switch ($survey['status'])
-            {
-                case 'published':
-                    $published++;
-                    break;
-
-                case 'draft':
-                    $draft++;
-                    break;
-
-                case 'closed':
-                    $closed++;
-                    break;
-            }
-        }
-
-        $view = View::factory('dashboard/index');
+        $view = View::factory(
+            'dashboard/index'
+        );
 
         $view->surveys = $surveys;
-        $view->total_surveys = count($surveys);
-        $view->published_surveys = $published;
-        $view->draft_surveys = $draft;
-        $view->closed_surveys = $closed;
+
+        $view->total_surveys =
+            $counts['total'];
+
+        $view->published_surveys =
+            $counts['published'];
+
+        $view->draft_surveys =
+            $counts['draft'];
+
+        $view->closed_surveys =
+            $counts['closed'];
 
         $this->response->body($view);
     }

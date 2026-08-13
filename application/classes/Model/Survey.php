@@ -8,9 +8,8 @@ class Model_Survey
      */
     const ITEMS_PER_PAGE = 10;
 
-
     /**
-     * Get surveys for the dashboard.
+     * Get surveys for dashboard.
      *
      * @return array
      */
@@ -22,22 +21,76 @@ class Model_Survey
                 's.description',
                 's.status',
                 array(
-                    DB::expr('COUNT(DISTINCT q.id)'),
+                    DB::expr(
+                        'COUNT(DISTINCT q.id)'
+                    ),
                     'questions'
                 )
             )
-            ->from(array('surveys', 's'))
-            ->join(array('survey_questions', 'q'), 'LEFT')
-                ->on('q.survey_id', '=', 's.id')
+            ->from(
+                array('surveys', 's')
+            )
+            ->join(
+                array('survey_questions', 'q'),
+                'LEFT'
+            )
+            ->on(
+                'q.survey_id',
+                '=',
+                's.id'
+            )
             ->group_by(
                 's.id',
                 's.title',
                 's.description',
                 's.status'
             )
-            ->order_by('s.id', 'DESC')
+            ->order_by(
+                's.id',
+                'DESC'
+            )
+            ->limit(5)
             ->execute()
             ->as_array();
+    }
+
+
+    /**
+     * Get surveys for the dashboard.
+     *
+     * @return array
+     */
+    public function get_dashboard_counts()
+    {
+        return DB::select(
+                array(
+                    DB::expr(
+                        "COUNT(*)"
+                    ),
+                    'total'
+                ),
+                array(
+                    DB::expr(
+                        "SUM(status = 'published')"
+                    ),
+                    'published'
+                ),
+                array(
+                    DB::expr(
+                        "SUM(status = 'draft')"
+                    ),
+                    'draft'
+                ),
+                array(
+                    DB::expr(
+                        "SUM(status = 'closed')"
+                    ),
+                    'closed'
+                )
+            )
+            ->from('surveys')
+            ->execute()
+            ->current();
     }
 
 
