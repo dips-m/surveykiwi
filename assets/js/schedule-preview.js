@@ -24,93 +24,258 @@ function clearFieldError(fieldId) {
 
 
 $(document).ready(function() {
-    // Format datetime-local value
-    function formatLocalDateTime(date) {
-        var pad = function(n) {
+
+
+    var scheduleId = parseInt($('#schedule_id').val(), 10) || 0;
+    var isEdit = scheduleId > 0;
+
+    var startDateValue = $('#start_date').val();
+    var endDateValue = $('#end_date').val();
+
+    /*
+     * Start Date
+     */
+
+
+    function formatDateTime(date) {
+        var pad = function (n) {
             return n < 10 ? '0' + n : n;
         };
 
         return date.getFullYear() + '-' +
             pad(date.getMonth() + 1) + '-' +
-            pad(date.getDate()) + 'T' +
+            pad(date.getDate()) + ' ' +
             pad(date.getHours()) + ':' +
-            pad(date.getMinutes());
+            pad(date.getMinutes()) + ':00';
     }
-    
-    // Prevent selecting past date/time
-    var now = new Date();
-    var minDateTimeString = formatLocalDateTime(now);
-   
-    function updateEndDateMin() {
-        var startDateVal = $('#start_date').val();
-        var frequencyVal = $('#frequency').val();
 
-        if (startDateVal) {
-            var startDate = new Date(startDateVal);
+    function getTomorrow() {
+        var tomorrow = new Date();
 
-            if (frequencyVal === 'once') {
+        tomorrow.setHours(0, 0, 0, 0);
+        tomorrow.setDate(tomorrow.getDate() + 1);
 
-                // Once: end date must be the same date as start date
-                var startDateOnly = startDateVal.substring(0, 10);
+        return tomorrow;
+    }
 
-                // Keep current end time if already selected
-                var currentEndVal = $('#end_date').val();
-                var endTime = '00:00';
+    var startInput = $('#start_date');
 
-                if (currentEndVal) {
-                    endTime = currentEndVal.substring(11, 16);
-                }
+    /*
+     * Get the value already saved in the database.
+     *
+     * Example:
+     * 2026-08-31 09:00:00
+     */
+    var savedStartDate = startInput.val();
 
-                var sameDayEndDate = startDateOnly + 'T' + endTime;
+    /*
+     * Convert database datetime to a format Flatpickr understands.
+     */
+    var defaultStartDate = null;
 
-                $('#end_date')
-                    .attr('min', startDateOnly + 'T00:00')
-                    .attr('max', startDateOnly + 'T23:59');
+    if (savedStartDate) {
+        defaultStartDate = savedStartDate.replace(' ', 'T');
+    }
 
-                // If existing end date is different, move it to start date
-                if (!currentEndVal || currentEndVal.substring(0, 10) !== startDateOnly) {
-                    $('#end_date').val(sameDayEndDate);
-                }
+    var tomorrow = getTomorrow();
 
-            } else {
+    /*
+     * Determine whether this is an existing schedule
+     * whose start date is already in the past.
+     */
+    var savedStartTimestamp = savedStartDate
+        ? new Date(savedStartDate.replace(' ', 'T')).getTime()
+        : null;
 
-                // Other frequencies:
-                // Minimum end date = next calendar day at 00:00
-                startDate.setDate(startDate.getDate() + 1);
-                startDate.setHours(0, 0, 0, 0);
+    var todayTimestamp = new Date().getTime();
 
-                var minEndDate = formatLocalDateTime(startDate);
+    var startDateIsPast = (
+        savedStartTimestamp &&
+        savedStartTimestamp < todayTimestamp
+    );
 
-                $('#end_date')
-                    .attr('min', minEndDate)
-                    .removeAttr('max');
+    /*
+     * Initialize Flatpickr.
+     */
+    var startPicker = flatpickr('#start_date', {
+        enableTime: true,
+        dateFormat: 'Y-m-d H:i:S',
+        altInput: true,
+        altFormat: 'd M Y, h:i K',
+        allowInput: true,
+        minDate: tomorrow,
+        defaultDate: defaultStartDate,
+
+        onReady: function (selectedDates, dateStr, instance) {
+
+            /*
+             * Existing saved start date is in the past.
+             *
+             * Show the saved value but do not allow editing.
+             */
+            if (startDateIsPast) {
+
+                instance.setDate(
+                    defaultStartDate,
+                    false
+                );
+
+                instance.altInput.disabled = true;
+
+                instance.altInput.style.cursor = 'not-allowed';
+
+                instance.altInput.style.backgroundColor = '#f5f5f5';
+
+                /*
+                 * Keep hidden value unchanged.
+                 */
+                startInput.val(savedStartDate);
+            }
+        },
+
+        onChange: function (selectedDates, dateStr, instance) {
+
+            if (selectedDates.length) {
+
+                var selectedDate = selectedDates[0];
+
+                startInput.val(
+                    formatDateTime(selectedDate)
+                );
+            }
+        }
+    });
+
+
+    /*
+     * Important:
+     *
+     * If the saved date is in the past, Flatpickr's minDate
+     * would normally reject it.
+     *
+     * We therefore explicitly restore the saved value after
+     * initialization and disable only the visible input.
+     */
+    if (startDateIsPast && defaultStartDate) {
+
+        startPicker.setDate(
+            defaultStartDate,
+            false
+        );
+
+        startInput.val(savedStartDate);
+
+        startPicker.altInput.value =
+            flatpickr.formatDate(
+                new Date(defaultStartDate),
+                'd M Y, h:i K'
+            );
+
+        startPicker.altInput.disabled = true;
+
+        startPicker.altInput.style.cursor = 'not-allowed';
+
+        startPicker.altInput.style.backgroundColor = '#f5f5f5';
+    }
+
+    /*
+     * End Date
+     */
+    var endPicker = flatpickr('#end_date', {
+        enableTime: true,
+        dateFormat: 'Y-m-d\\TH:i',
+        altInput: true,
+        altFormat: 'd M Y, h:i K',
+        allowInput: true,
+        onChange: function() {
+            clearFieldError('end-date');
+        }
+    });
+
+    function updateEndDateMin(startDate) {
+
+        if (!startDate) {
+            return;
+        }
+
+        var frequency = $('#frequency').val();
+
+        /*
+         * Once:
+         * End date must be on the same date as start date.
+         */
+        if (frequency === 'once') {
+
+            var startDateOnly = new Date(startDate);
+            startDateOnly.setHours(0, 0, 0, 0);
+
+            var endDate = new Date(startDate);
+            endDate.setHours(23, 59, 0, 0);
+
+            endPicker.set('minDate', startDateOnly);
+            endPicker.set('maxDate', endDate);
+
+            var currentEnd = endPicker.selectedDates[0];
+
+            if (!currentEnd || currentEnd.toDateString() !== startDate.toDateString()) {
+                var newEnd = new Date(startDate);
+                newEnd.setHours(23, 59, 0, 0);
+
+                endPicker.setDate(newEnd, false);
             }
 
         } else {
 
-            $('#end_date')
-                .attr('min', minDateTimeString)
-                .removeAttr('max');
+            /*
+             * Daily / Weekly / Monthly / Quarterly:
+             * End date must be at least one calendar day
+             * after start date.
+             */
+            var minEndDate = new Date(startDate);
+            minEndDate.setDate(minEndDate.getDate() + 1);
+            minEndDate.setHours(0, 0, 0, 0);
+
+            endPicker.set('minDate', minEndDate);
+            endPicker.set('maxDate', null);
+
+            var currentEnd = endPicker.selectedDates[0];
+
+            if (currentEnd && currentEnd < minEndDate) {
+                endPicker.clear();
+            }
         }
     }
 
-    var scheduleId = parseInt($('#schedule_id').val(), 10) || 0;
-    var isEdit = scheduleId > 0;
+    /*
+     * Frequency change
+     */
+    $('#frequency').on('change', function() {
 
-    $('#start_date').attr('min', minDateTimeString);
-    $('#end_date').attr('min', minDateTimeString);
+        clearFieldError('frequency');
 
-    updateEndDateMin();
+        var startDate = startPicker.selectedDates[0];
+
+        if (startDate) {
+            updateEndDateMin(startDate);
+        }
+    });
+
+    /*
+     * Initial date setup
+     */
+    var existingStartDate = startPicker.selectedDates[0];
+
+    if (existingStartDate) {
+        updateEndDateMin(existingStartDate);
+    }
 
     // Clear errors
     $('#frequency').on('change', function() {
         clearFieldError('frequency');
-        updateEndDateMin();
     });
 
     $('#start_date').on('input change', function() {
         clearFieldError('start-date');
-        updateEndDateMin();
     });
 
 
@@ -368,9 +533,9 @@ $(document).ready(function() {
                         '</div>'
                     );
 
-                    // setTimeout(function() {
+                    setTimeout(function() {
                         location.reload();
-                    // }, 1000);
+                    }, 1000);
 
                 } else {
 

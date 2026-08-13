@@ -89,7 +89,9 @@ class Controller_Schedule extends Controller_Template
             $validation = $schedule_model->validate_save(
                 $this->request->post(),
                 $id,
-                $file
+                $file,
+                $schedule_id
+
             );
 
             if (!$validation['valid'])

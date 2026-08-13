@@ -1,37 +1,106 @@
--- 1. Insert Surveys first (Parent Table)
-INSERT INTO `surveys` (`id`, `public_token`, `title`, `description`, `end_date`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'dfa57379-a869-463e-8979-62008cd4e874', 'School Experience Feedback Form', 'We value your input to help us improve the learning environment and overall experience at our school.', '2026-08-31 22:00:00', 'published', '2026-07-27 11:25:57', '2026-08-04 12:55:59'),
-(2, '9f6ff7e4-dbf2-4046-94e6-16b871360caa', 'Survey: VTP property visit', 'Demo survey about real estate visiting a VTP property.', NULL, 'published', '2026-07-30 06:01:04', '2026-07-30 06:01:40'),
-(3, '0ada7d17-6b67-4d49-a0da-8eb17b633a67', 'VTP Property Customer Satisfaction Survey', 'Help us understand your experience and satisfaction with VTP Property developments.', NULL, 'published', '2026-07-30 11:36:39', '2026-07-30 12:26:08');
+START TRANSACTION;
 
--- 2. Insert Survey Questions (Child Table - Now safe because Surveys exist)
+INSERT INTO `surveys` (`id`,`title`,`description`,`status`,`created_at`,`updated_at`) VALUES
+(1,'Customer Satisfaction Survey','Measure overall customer satisfaction and service experience.','published',NOW(),NOW()),
+(2,'Employee Engagement Survey','Understand employee engagement, satisfaction and workplace experience.','published',NOW(),NOW()),
+(3,'Product Feedback Survey','Collect customer feedback about product quality, usability and features.','published',NOW(),NOW()),
+(4,'Website Experience Survey','Evaluate website usability, performance and overall user experience.','published',NOW(),NOW()),
+(5,'Event Feedback Survey','Gather feedback from attendees about event quality and organization.','published',NOW(),NOW()),
+(6,'Training Feedback Survey','Measure participant satisfaction and effectiveness of training programs.','published',NOW(),NOW()),
+(7,'Healthcare Service Survey','Evaluate patient experience and healthcare service quality.','published',NOW(),NOW()),
+(8,'Restaurant Feedback Survey','Understand customer satisfaction with food, service and ambiance.','published',NOW(),NOW()),
+(9,'IT Support Survey','Measure user satisfaction with IT support and issue resolution.','published',NOW(),NOW()),
+(10,'Customer Loyalty Survey','Understand customer loyalty, retention and recommendation behavior.','published',NOW(),NOW());
 
-INSERT INTO `survey_questions` (`id`, `survey_id`, `question`, `type`, `options`, `settings`, `sort_order`, `created_at`, `updated_at`) VALUES
--- Survey 1: School Experience Feedback Form (10 Questions)
-(1, 1, 'Overall, how satisfied are you with your learning experience at our school?', 'rating', NULL, '{\"max\": 5, \"min\": 1, \"required\": true}', 1, '2026-07-27 11:28:00', '2026-07-27 11:28:00'),
-(2, 1, 'How would you rate the cleanliness and upkeep of the school classrooms and facilities?', 'rating', NULL, '{\"max\": 5, \"min\": 1, \"required\": true}', 2, '2026-07-27 11:28:00', '2026-07-27 11:28:00'),
-(3, 1, 'How satisfied are you with the responsiveness and effectiveness of our teaching staff?', 'rating', NULL, '{\"max\": 5, \"min\": 1, \"required\": true}', 3, '2026-07-27 11:28:00', '2026-07-27 11:28:00'),
-(4, 1, 'How would you describe your experience with the school administration staff?', 'radio', '[\"Excellent\", \"Good\", \"Average\", \"Poor\", \"Very Poor\"]', '{\"max\": null, \"min\": null, \"required\": true}', 4, '2026-07-27 11:28:00', '2026-07-27 11:28:00'),
-(5, 1, 'Are you satisfied with the level of safety and security provided on campus?', 'radio', '[\"Very Satisfied\", \"Satisfied\", \"Neutral\", \"Dissatisfied\", \"Very Dissatisfied\"]', '{\"max\": null, \"min\": null, \"required\": true}', 5, '2026-07-27 11:28:00', '2026-07-27 11:28:00'),
-(6, 1, 'Which of the following extracurricular activities are most important to you?', 'checkbox', '[\"Sports\", \"Arts and Music\", \"Science Club\", \"Debate Society\", \"Community Service\"]', '{\"max\": null, \"min\": null, \"required\": false}', 6, '2026-07-27 11:28:00', '2026-07-27 11:28:00'),
-(7, 1, 'How well do you feel informed about school events, schedules, and policy updates?', 'dropdown', '[\"Always well-informed\", \"Usually well-informed\", \"Sometimes informed\", \"Rarely informed\", \"Never informed\"]', '{\"max\": null, \"min\": null, \"required\": true}', 7, '2026-07-27 11:28:00', '2026-07-27 11:28:00'),
-(8, 1, 'Do you plan to continue your enrollment for the next academic year?', 'radio', '[\"Yes, definitely\", \"Likely yes\", \"Unsure\", \"Likely no\", \"No, definitely not\"]', '{\"max\": null, \"min\": null, \"required\": true}', 8, '2026-07-27 11:28:00', '2026-07-27 11:28:00'),
-(9, 1, 'What is one change the school could make to significantly improve your learning experience?', 'textarea', NULL, '{\"max\": null, \"min\": null, \"required\": false}', 9, '2026-07-27 11:28:00', '2026-07-27 11:28:00'),
-(10, 1, 'How likely are you to recommend this school to a friend or family member?', 'rating', NULL, '{\"max\": 5, \"min\": 1, \"required\": true}', 10, '2026-07-27 11:28:00', '2026-07-27 11:28:00'),
+INSERT INTO `survey_questions` (`survey_id`,`question`,`type`,`options`,`settings`,`sort_order`,`created_at`,`updated_at`) VALUES
+(1,'How satisfied are you with our overall service?','single_choice','["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"]',NULL,1,NOW(),NOW()),
+(1,'How would you rate the quality of our service?','rating','[1,2,3,4,5]',NULL,2,NOW(),NOW()),
+(1,'How easy was it to get the help you needed?','single_choice','["Very Easy","Easy","Neutral","Difficult","Very Difficult"]',NULL,3,NOW(),NOW()),
+(1,'How satisfied are you with our response time?','single_choice','["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"]',NULL,4,NOW(),NOW()),
+(1,'How likely are you to recommend us?','rating','[1,2,3,4,5,6,7,8,9,10]',NULL,5,NOW(),NOW()),
+(1,'Which area should we improve?','single_choice','["Service","Support","Communication","Pricing","Product"]',NULL,6,NOW(),NOW()),
+(1,'Did our service meet your expectations?','single_choice','["Yes","Partially","No"]',NULL,7,NOW(),NOW()),
+(1,'Please share any additional feedback.','text',NULL,NULL,8,NOW(),NOW()),
 
--- Survey 2: VTP Property Visit Survey (6 Questions)
-(11, 2, 'How was your overall experience during your visit to the VTP property?', 'rating', NULL, '{\"max\": 5, \"min\": 1, \"required\": true}', 1, '2026-07-30 06:05:00', '2026-07-30 06:05:00'),
-(12, 2, 'How would you rate the knowledge and helpfulness of our sales executive?', 'rating', NULL, '{\"max\": 5, \"min\": 1, \"required\": true}', 2, '2026-07-30 06:05:00', '2026-07-30 06:05:00'),
-(13, 2, 'How did you find out about this VTP property?', 'dropdown', '[\"Social Media\", \"Property Portal\", \"Newspaper Ad\", \"Word of Mouth\", \"Walk-in\"]', '{\"max\": null, \"min\": null, \"required\": true}', 3, '2026-07-30 06:05:00', '2026-07-30 06:05:00'),
-(14, 2, 'Which configuration type are you primarily interested in?', 'radio', '[\"1 BHK\", \"2 BHK\", \"3 BHK\", \"Villa / Penthouse\"]', '{\"max\": null, \"min\": null, \"required\": true}', 4, '2026-07-30 06:05:00', '2026-07-30 06:05:00'),
-(15, 2, 'What are your main expectations from a residential property?', 'checkbox', '[\"Location & Connectivity\", \"Amenities\", \"Pricing & Payment Plans\", \"Builder Reputation\"]', '{\"max\": null, \"min\": null, \"required\": false}', 5, '2026-07-30 06:05:00', '2026-07-30 06:05:00'),
-(16, 2, 'Please share any additional comments or queries regarding your visit.', 'textarea', NULL, '{\"max\": null, \"min\": null, \"required\": false}', 6, '2026-07-30 06:05:00', '2026-07-30 06:05:00'),
+(2,'How satisfied are you with your current role?','single_choice','["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"]',NULL,1,NOW(),NOW()),
+(2,'How would you rate communication within your team?','rating','[1,2,3,4,5]',NULL,2,NOW(),NOW()),
+(2,'Do you feel valued by your organization?','single_choice','["Always","Often","Sometimes","Rarely","Never"]',NULL,3,NOW(),NOW()),
+(2,'How satisfied are you with your manager?','single_choice','["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"]',NULL,4,NOW(),NOW()),
+(2,'Do you have opportunities for career growth?','single_choice','["Yes","Somewhat","No"]',NULL,5,NOW(),NOW()),
+(2,'How would you rate your work-life balance?','rating','[1,2,3,4,5]',NULL,6,NOW(),NOW()),
+(2,'Would you recommend this organization as a workplace?','single_choice','["Definitely","Probably","Not Sure","Probably Not","Definitely Not"]',NULL,7,NOW(),NOW()),
+(2,'What can the organization improve?','text',NULL,NULL,8,NOW(),NOW()),
 
--- Survey 3: VTP Property Customer Satisfaction Survey (7 Questions)
-(17, 3, 'How satisfied are you with the quality of construction of your property?', 'rating', NULL, '{\"max\": 5, \"min\": 1, \"required\": true}', 1, '2026-07-30 11:40:00', '2026-07-30 11:40:00'),
-(18, 3, 'How would you rate the handling of the handover and documentation process?', 'rating', NULL, '{\"max\": 5, \"min\": 1, \"required\": true}', 2, '2026-07-30 11:40:00', '2026-07-30 11:40:00'),
-(19, 3, 'How responsive has our customer support team been to your queries or issues?', 'radio', '[\"Very Responsive\", \"Responsive\", \"Neutral\", \"Slow\", \"Unresponsive\"]', '{\"max\": null, \"min\": null, \"required\": true}', 3, '2026-07-30 11:40:00', '2026-07-30 11:40:00'),
-(20, 3, 'Are you satisfied with the maintenance services provided post-possession?', 'radio', '[\"Yes, highly satisfied\", \"Moderately satisfied\", \"Neutral\", \"Dissatisfied\"]', '{\"max\": null, \"min\": null, \"required\": true}', 4, '2026-07-30 11:40:00', '2026-07-30 11:40:00'),
-(21, 3, 'Which community facilities do you use most frequently?', 'checkbox', '[\"Clubhouse\", \"Swimming Pool\", \"Kids Play Area\", \"Walking Track\", \"Security Systems\"]', '{\"max\": null, \"min\": null, \"required\": false}', 5, '2026-07-30 11:40:00', '2026-07-30 11:40:00'),
-(22, 3, 'Do you have any suggestions to improve our society management?', 'textarea', NULL, '{\"max\": null, \"min\": null, \"required\": false}', 6, '2026-07-30 11:40:00', '2026-07-30 11:40:00'),
-(23, 3, 'How likely are you to purchase another property or recommend VTP to others?', 'rating', NULL, '{\"max\": 5, \"min\": 1, \"required\": true}', 7, '2026-07-30 11:40:00', '2026-07-30 11:40:00');
+(3,'How satisfied are you with our product?','single_choice','["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"]',NULL,1,NOW(),NOW()),
+(3,'How easy is the product to use?','rating','[1,2,3,4,5]',NULL,2,NOW(),NOW()),
+(3,'How would you rate product quality?','rating','[1,2,3,4,5]',NULL,3,NOW(),NOW()),
+(3,'Which feature do you use most?','single_choice','["Dashboard","Reports","Search","Notifications","Other"]',NULL,4,NOW(),NOW()),
+(3,'Does the product meet your needs?','single_choice','["Completely","Mostly","Partially","Not At All"]',NULL,5,NOW(),NOW()),
+(3,'How reliable is the product?','single_choice','["Excellent","Good","Average","Poor"]',NULL,6,NOW(),NOW()),
+(3,'Would you purchase this product again?','single_choice','["Definitely","Probably","Not Sure","Probably Not","Definitely Not"]',NULL,7,NOW(),NOW()),
+(3,'What feature would you like us to add?','text',NULL,NULL,8,NOW(),NOW()),
+
+(4,'How easy was it to navigate our website?','rating','[1,2,3,4,5]',NULL,1,NOW(),NOW()),
+(4,'How would you rate the website design?','rating','[1,2,3,4,5]',NULL,2,NOW(),NOW()),
+(4,'Did you find the information you needed?','single_choice','["Yes","Partially","No"]',NULL,3,NOW(),NOW()),
+(4,'How fast did the website load?','single_choice','["Very Fast","Fast","Average","Slow","Very Slow"]',NULL,4,NOW(),NOW()),
+(4,'How would you rate the mobile experience?','rating','[1,2,3,4,5]',NULL,5,NOW(),NOW()),
+(4,'Was the website content clear?','single_choice','["Very Clear","Clear","Neutral","Unclear","Very Unclear"]',NULL,6,NOW(),NOW()),
+(4,'Would you visit our website again?','single_choice','["Definitely","Probably","Not Sure","Probably Not","Definitely Not"]',NULL,7,NOW(),NOW()),
+(4,'What should we improve on the website?','text',NULL,NULL,8,NOW(),NOW()),
+
+(5,'How satisfied were you with the event?','single_choice','["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"]',NULL,1,NOW(),NOW()),
+(5,'How would you rate the event organization?','rating','[1,2,3,4,5]',NULL,2,NOW(),NOW()),
+(5,'How would you rate the venue?','rating','[1,2,3,4,5]',NULL,3,NOW(),NOW()),
+(5,'How useful were the sessions?','single_choice','["Very Useful","Useful","Neutral","Not Useful","Not Useful At All"]',NULL,4,NOW(),NOW()),
+(5,'How satisfied were you with event communication?','single_choice','["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"]',NULL,5,NOW(),NOW()),
+(5,'Did the event meet your expectations?','single_choice','["Exceeded","Met","Partially Met","Did Not Meet"]',NULL,6,NOW(),NOW()),
+(5,'Would you attend another event from us?','single_choice','["Definitely","Probably","Not Sure","Probably Not","Definitely Not"]',NULL,7,NOW(),NOW()),
+(5,'What could we improve for future events?','text',NULL,NULL,8,NOW(),NOW()),
+
+(6,'How satisfied are you with the training?','single_choice','["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"]',NULL,1,NOW(),NOW()),
+(6,'How would you rate the trainer?','rating','[1,2,3,4,5]',NULL,2,NOW(),NOW()),
+(6,'How useful was the training content?','rating','[1,2,3,4,5]',NULL,3,NOW(),NOW()),
+(6,'Was the training easy to understand?','single_choice','["Very Easy","Easy","Neutral","Difficult","Very Difficult"]',NULL,4,NOW(),NOW()),
+(6,'Was the training duration appropriate?','single_choice','["Too Short","Appropriate","Too Long"]',NULL,5,NOW(),NOW()),
+(6,'Did the training improve your knowledge?','single_choice','["Significantly","Moderately","Slightly","Not At All"]',NULL,6,NOW(),NOW()),
+(6,'Would you recommend this training?','single_choice','["Definitely","Probably","Not Sure","Probably Not","Definitely Not"]',NULL,7,NOW(),NOW()),
+(6,'What should be improved in the training?','text',NULL,NULL,8,NOW(),NOW()),
+
+(7,'How satisfied are you with the healthcare service?','single_choice','["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"]',NULL,1,NOW(),NOW()),
+(7,'How would you rate staff behavior?','rating','[1,2,3,4,5]',NULL,2,NOW(),NOW()),
+(7,'How would you rate waiting time?','rating','[1,2,3,4,5]',NULL,3,NOW(),NOW()),
+(7,'Was the facility clean and comfortable?','single_choice','["Excellent","Good","Average","Poor"]',NULL,4,NOW(),NOW()),
+(7,'Did the staff explain everything clearly?','single_choice','["Always","Often","Sometimes","Rarely","Never"]',NULL,5,NOW(),NOW()),
+(7,'How satisfied are you with the appointment process?','single_choice','["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"]',NULL,6,NOW(),NOW()),
+(7,'Would you recommend our healthcare service?','single_choice','["Definitely","Probably","Not Sure","Probably Not","Definitely Not"]',NULL,7,NOW(),NOW()),
+(7,'How can we improve your experience?','text',NULL,NULL,8,NOW(),NOW()),
+
+(8,'How satisfied are you with your meal?','single_choice','["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"]',NULL,1,NOW(),NOW()),
+(8,'How would you rate the food quality?','rating','[1,2,3,4,5]',NULL,2,NOW(),NOW()),
+(8,'How would you rate the staff service?','rating','[1,2,3,4,5]',NULL,3,NOW(),NOW()),
+(8,'How would you rate the restaurant ambiance?','rating','[1,2,3,4,5]',NULL,4,NOW(),NOW()),
+(8,'Was your order served on time?','single_choice','["Yes","Partially","No"]',NULL,5,NOW(),NOW()),
+(8,'How would you rate the value for money?','single_choice','["Excellent","Good","Average","Poor"]',NULL,6,NOW(),NOW()),
+(8,'Would you visit our restaurant again?','single_choice','["Definitely","Probably","Not Sure","Probably Not","Definitely Not"]',NULL,7,NOW(),NOW()),
+(8,'What can we improve?','text',NULL,NULL,8,NOW(),NOW()),
+
+(9,'How satisfied are you with IT support?','single_choice','["Very Satisfied","Satisfied","Neutral","Dissatisfied","Very Dissatisfied"]',NULL,1,NOW(),NOW()),
+(9,'How quickly was your issue resolved?','single_choice','["Very Quickly","Quickly","Average","Slowly","Very Slowly"]',NULL,2,NOW(),NOW()),
+(9,'How would you rate the support team?','rating','[1,2,3,4,5]',NULL,3,NOW(),NOW()),
+(9,'Was your issue resolved completely?','single_choice','["Yes","Partially","No"]',NULL,4,NOW(),NOW()),
+(9,'How easy was it to contact IT support?','rating','[1,2,3,4,5]',NULL,5,NOW(),NOW()),
+(9,'Was the communication clear?','single_choice','["Very Clear","Clear","Neutral","Unclear","Very Unclear"]',NULL,6,NOW(),NOW()),
+(9,'Would you recommend our IT support service?','single_choice','["Definitely","Probably","Not Sure","Probably Not","Definitely Not"]',NULL,7,NOW(),NOW()),
+(9,'What should IT support improve?','text',NULL,NULL,8,NOW(),NOW()),
+
+(10,'How likely are you to recommend our company?','rating','[1,2,3,4,5,6,7,8,9,10]',NULL,1,NOW(),NOW()),
+(10,'How satisfied are you with our products?','rating','[1,2,3,4,5]',NULL,2,NOW(),NOW()),
+(10,'How satisfied are you with our service?','rating','[1,2,3,4,5]',NULL,3,NOW(),NOW()),
+(10,'How likely are you to purchase from us again?','single_choice','["Definitely","Probably","Not Sure","Probably Not","Definitely Not"]',NULL,4,NOW(),NOW()),
+(10,'How well does our company meet your expectations?','single_choice','["Exceeds","Meets","Partially Meets","Does Not Meet"]',NULL,5,NOW(),NOW()),
+(10,'What is the main reason you continue using us?','single_choice','["Quality","Price","Service","Convenience","Trust"]',NULL,6,NOW(),NOW()),
+(10,'How would you rate your overall experience?','rating','[1,2,3,4,5]',NULL,7,NOW(),NOW()),
+(10,'What could we do to improve your loyalty?','text',NULL,NULL,8,NOW(),NOW());
+
+COMMIT;

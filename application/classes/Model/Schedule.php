@@ -34,7 +34,7 @@ class Model_Schedule
      *
      * @return array
      */
-    public function validate_save($post, $survey_id, $file = NULL)
+    public function validate_save($post, $survey_id, $file = NULL, $schedule_id = 0)
     {
         /*
          * Validate required schedule fields.
@@ -99,7 +99,7 @@ class Model_Schedule
         /*
          * Start date cannot be in the past.
          */
-        if ($start_time < (time() - 60))
+        if ((int) $schedule_id <= 0 && $start_time < (time() - 60))
         {
             return array(
                 'valid' => FALSE,
@@ -225,11 +225,6 @@ class Model_Schedule
             : 0;
 
 
-        $reminder_interval = isset($post['reminder_interval_days'])
-            ? (int) $post['reminder_interval_days']
-            : 0;
-
-
         $is_active = isset($post['is_active'])
             ? 1
             : 0;
@@ -266,9 +261,7 @@ class Model_Schedule
                     'frequency' => $frequency,
                     'start_date' => $start_timestamp,
                     'end_date' => $end_timestamp,
-                    'next_run_at' => $start_timestamp,
                     'reminders_enabled' => $reminders_enabled,
-                    'reminder_interval_days' => $reminder_interval,
                     'is_active' => $is_active,
                     'updated_at' => $now
                 ))
@@ -291,9 +284,7 @@ class Model_Schedule
                 'frequency',
                 'start_date',
                 'end_date',
-                'next_run_at',
                 'reminders_enabled',
-                'reminder_interval_days',
                 'is_active',
                 'created_at',
                 'updated_at'
@@ -306,7 +297,6 @@ class Model_Schedule
                 $end_timestamp,
                 $start_timestamp,
                 $reminders_enabled,
-                $reminder_interval,
                 $is_active,
                 $now,
                 $now
