@@ -66,6 +66,7 @@ CREATE TABLE `survey_participants` (
 --
 CREATE TABLE `survey_invitations` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `survey_id` bigint UNSIGNED DEFAULT NULL,
   `survey_participant_id` bigint UNSIGNED NOT NULL,
   `status` enum('sent','fail') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'sent',
   `sent_at` timestamp NULL DEFAULT NULL,
