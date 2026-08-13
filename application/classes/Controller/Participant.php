@@ -20,25 +20,21 @@ class Controller_Participant extends Controller
         {
             $survey_id = (int) $this->request->post('survey_id');
 
-            $first_name = trim(
-                $this->request->post('first_name')
-            );
-
-            $last_name = trim(
-                $this->request->post('last_name')
-            );
-
-            $email = trim(
-                $this->request->post('email')
-            );
+            $first_name = trim($this->request->post('first_name'));
+            $last_name = trim($this->request->post('last_name'));
+            $email = trim($this->request->post('email'));
 
             if ($survey_id <= 0)
             {
-                $this->_json_response(
-                    'error',
-                    'Invalid survey.'
-                );
+                $this->_json_response('error', 'Invalid survey.');
+                return;
+            }
 
+            $participant_model = Model::factory('Participant');
+
+            if ($participant_model->email_exists($survey_id, $email))
+            {
+                $this->_json_response('error', 'This email already exists for this survey.');
                 return;
             }
 
@@ -53,19 +49,9 @@ class Controller_Participant extends Controller
 
             if (!$survey)
             {
-                $this->_json_response(
-                    'error',
-                    'Survey not found.'
-                );
-
+                $this->_json_response('error','Survey not found.');
                 return;
             }
-
-            /*
-            * Participant DB/business logic
-            * remains inside Model_Participant.
-            */
-            $participant_model = Model::factory('Participant');
 
             $participant_id = $participant_model->create(
                 $survey_id,
@@ -74,25 +60,13 @@ class Controller_Participant extends Controller
                 $email
             );
 
-            $this->_json_response(
-                'success',
-                'Participant added successfully.'
-            );
-
+            $this->_json_response('success','Participant added successfully.');
             return;
         }
         catch (Exception $e)
         {
-            Kohana::$log->add(
-                Kohana::ERROR,
-                $e->getMessage()
-            );
-
-            $this->_json_response(
-                'error',
-                $e->getMessage()
-            );
-
+            Kohana::$log->add(Kohana::ERROR, $e->getMessage());
+            $this->_json_response('error', $e->getMessage());
             return;
         }
     }
@@ -106,56 +80,30 @@ class Controller_Participant extends Controller
     {
         if ($this->request->method() !== HTTP_Request::POST)
         {
-            $this->_json_response(
-                'error',
-                'Invalid request method.'
-            );
-
+            $this->_json_response('error','Invalid request method.');
             return;
         }
-
 
         $id = (int) $this->request->post('id');
 
-
         if ($id <= 0)
         {
-            $this->_json_response(
-                'error',
-                'Invalid participant.'
-            );
-
+            $this->_json_response('error','Invalid participant.');
             return;
         }
 
+        $survey_id = (int) $this->request->post('survey_id');
 
-        $first_name = trim(
-            $this->request->post('first_name')
-        );
-
-        $last_name = trim(
-            $this->request->post('last_name')
-        );
-
-        $email = trim(
-            $this->request->post('email')
-        );
-
+        $first_name = trim($this->request->post('first_name'));
+        $last_name = trim($this->request->post('last_name'));
+        $email = trim($this->request->post('email'));
 
         /*
          * Validate required fields.
          */
-        if (
-            $first_name === '' ||
-            $last_name === '' ||
-            $email === ''
-        )
+        if ($first_name === '' || $last_name === '' || $email === '')
         {
-            $this->_json_response(
-                'error',
-                'All participant fields are required.'
-            );
-
+            $this->_json_response('error','All participant fields are required.');
             return;
         }
 
@@ -165,20 +113,30 @@ class Controller_Participant extends Controller
          */
         if (!filter_var($email, FILTER_VALIDATE_EMAIL))
         {
+            $this->_json_response('error', 'Please enter a valid email address.');
+            return;
+        }
+
+        if ($survey_id <= 0)
+        {
             $this->_json_response(
                 'error',
-                'Please enter a valid email address.'
+                'Invalid survey.'
             );
 
             return;
         }
 
+        $participant_model = Model::factory('Participant');
+
+        if ($participant_model->email_exists($survey_id, $email, $id))
+            {
+                $this->_json_response('error', 'This email already exists for this survey.');
+                return;
+            }
 
         try
         {
-            $participant_model = Model::factory('Participant');
-
-
             /*
              * Update participant.
              */

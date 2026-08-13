@@ -39,6 +39,33 @@ class Model_Participant
             ->get('total');
     }
 
+    /**
+     * Check whether an email already exists for a survey.
+     *
+     * @param integer      $survey_id
+     * @param string       $email
+     * @param integer|null $exclude_id
+     *
+     * @return boolean
+     */
+    public function email_exists($survey_id, $email, $exclude_id = NULL)
+    {
+        $query = DB::select(
+                array(DB::expr('COUNT(*)'), 'total')
+            )
+            ->from('survey_participants')
+            ->where('survey_id', '=', (int) $survey_id)
+            ->where('email', '=', trim($email));
+
+        // During edit, exclude the current participant.
+        if ($exclude_id !== NULL  && (int) $exclude_id > 0)
+        {
+            $query->where('id', '!=', (int) $exclude_id);
+        }
+
+        return (int) $query->execute()->get('total') > 0;
+    }
+
 
     /**
      * Import participants from CSV.

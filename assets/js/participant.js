@@ -166,6 +166,13 @@ $(document).ready(function () {
 
         // Actual DB ID
         const participantId = row.data('participant-id');
+        const surveyId = row.data('survey-id');
+
+
+        console.log('surveyId:', surveyId);
+        console.log('participantId:', participantId);
+
+        
 
         const firstName = row
             .find('.participant-first-name-input')
@@ -224,6 +231,7 @@ $(document).ready(function () {
 
             data: {
                 id: participantId,
+                survey_id: surveyId,
                 first_name: firstName,
                 last_name: lastName,
                 email: email

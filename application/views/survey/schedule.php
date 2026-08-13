@@ -614,6 +614,7 @@
                                     <tr
                                         class="participant-row"
                                         data-participant-id="<?php echo (int) $p['id']; ?>"
+                                        data-survey-id="<?php echo (int)  $survey['id']; ?>"
                                     >
 
                                         <td style="padding: 10px 12px; color: #94a3b8;">
