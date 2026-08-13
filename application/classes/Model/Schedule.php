@@ -21,6 +21,16 @@ class Model_Schedule
             ->current();
     }
 
+    public function get_entries_by_schedule_id($schedule_id)
+    {
+        return DB::select()
+            ->from('survey_schedule_entries')
+            ->where('survey_schedule_id', '=', (int) $schedule_id)
+            ->order_by('start_date', 'ASC')
+            ->execute()
+            ->as_array();
+    }
+
 
     /**
      * Validate schedule save data.
@@ -195,50 +205,22 @@ class Model_Schedule
         $survey_id = (int) $survey_id;
         $schedule_id = (int) $schedule_id;
 
-
         $frequency = $post['frequency'];
         $start_date = $post['start_date'];
         $end_date = $post['end_date'];
 
-
         $start_time = strtotime($start_date);
         $end_time = strtotime($end_date);
 
+        $start_timestamp = date('Y-m-d H:i:s', $start_time);
+        $end_timestamp = date('Y-m-d H:i:s', $end_time);
 
-        $start_timestamp = date(
-            'Y-m-d H:i:s',
-            $start_time
-        );
-
-        $end_timestamp = date(
-            'Y-m-d H:i:s',
-            $end_time
-        );
-
-
-        /*
-         * Reminders are kept because they already exist
-         * in the current schedule table/form.
-         */
-        $reminders_enabled = isset($post['reminders_enabled'])
-            ? 1
-            : 0;
-
-
-        $is_active = isset($post['is_active'])
-            ? 1
-            : 0;
-
+        $reminders_enabled = isset($post['reminders_enabled']) ? 1 : 0;
+        $is_active = isset($post['is_active']) ? 1 : 0;
 
         $now = date('Y-m-d H:i:s');
 
-
-        /*
-         * Check whether the submitted schedule exists
-         * for this survey.
-         */
         $existing = NULL;
-
 
         if ($schedule_id > 0)
         {
@@ -250,10 +232,9 @@ class Model_Schedule
                 ->current();
         }
 
-
         /*
-         * Update existing schedule.
-         */
+        * Update existing schedule.
+        */
         if ($existing)
         {
             DB::update('survey_schedules')
@@ -268,218 +249,158 @@ class Model_Schedule
                 ->where('id', '=', $schedule_id)
                 ->where('survey_id', '=', $survey_id)
                 ->execute();
+        }
+        else
+        {
+            /*
+            * Create new schedule.
+            */
+            list($insert_id, $rows) = DB::insert(
+                'survey_schedules',
+                array(
+                    'survey_id',
+                    'frequency',
+                    'start_date',
+                    'end_date',
+                    'reminders_enabled',
+                    'is_active',
+                    'created_at',
+                    'updated_at'
+                )
+            )
+                ->values(array(
+                    $survey_id,
+                    $frequency,
+                    $start_timestamp,
+                    $end_timestamp,
+                    $reminders_enabled,
+                    $is_active,
+                    $now,
+                    $now
+                ))
+                ->execute();
 
-
-            return $schedule_id;
+            /*
+            * IMPORTANT:
+            * Use the newly created schedule ID.
+            */
+            $schedule_id = (int) $insert_id;
         }
 
-
         /*
-         * Create new schedule.
-         */
-        list($insert_id, $rows) = DB::insert(
-            'survey_schedules',
-            array(
-                'survey_id',
-                'frequency',
-                'start_date',
-                'end_date',
-                'reminders_enabled',
-                'is_active',
-                'created_at',
-                'updated_at'
-            )
-        )
-            ->values(array(
-                $survey_id,
-                $frequency,
-                $start_timestamp,
-                $end_timestamp,
-                $start_timestamp,
-                $reminders_enabled,
-                $is_active,
-                $now,
-                $now
-            ))
+        * Remove old generated entries.
+        */
+        DB::delete('survey_schedule_entries')
+            ->where('survey_schedule_id', '=', $schedule_id)
             ->execute();
 
+        /*
+        * Generate new entries.
+        */
+        $entries = $this->generate_schedule_entries(
+            $frequency,
+            $start_time,
+            $end_time
+        );
 
-        return $insert_id;
+        /*
+        * Store generated entries.
+        */
+        foreach ($entries as $entry)
+        {
+            DB::insert(
+                'survey_schedule_entries',
+                array(
+                    'survey_schedule_id',
+                    'start_date',
+                    'end_date',
+                    'status',
+                    'creator_email_sent',
+                    'created_at',
+                    'updated_at'
+                )
+            )
+                ->values(array(
+                    $schedule_id,
+                    $entry['start_date'],
+                    $entry['end_date'],
+                    $entry['status'],
+                    0,
+                    $now,
+                    $now
+                ))
+                ->execute();
+        }
+
+        return $schedule_id;
     }
 
-    /**
-     * Calculate future schedule dates.
-     *
-     * @param string $frequency
-     * @param string $start_date_val
-     * @param string $end_date_val
-     *
-     * @return array
-     */
-    public function calculate_future_dates(
-        $frequency,
-        $start_date_val,
-        $end_date_val
-    )
+    public function generate_schedule_entries($frequency, $start_time, $end_time)
     {
-        if (
-            empty($frequency) ||
-            empty($start_date_val) ||
-            empty($end_date_val)
-        )
-        {
-            return array();
-        }
+        $entries = array();
+        $now = time();
 
-
-        $start_time = strtotime($start_date_val);
-        $schedule_end_time = strtotime($end_date_val);
-        $current_datetime = time();
-
-
-        if (
-            $start_time === FALSE ||
-            $schedule_end_time === FALSE
-        )
-        {
-            return array();
-        }
-
-
-        $future_dates = array();
-
-
-        /*
-         * Keep the configured times.
-         */
-        $start_time_of_day = date(
-            'H:i:s',
-            $start_time
-        );
-
-        $end_time_of_day = date(
-            'H:i:s',
-            $schedule_end_time
-        );
-
-
-        /*
-         * Once schedule.
-         */
         if ($frequency === 'once')
         {
-            if ($schedule_end_time >= $current_datetime)
-            {
-                $future_dates[] = array(
-                    'start_date' => date(
-                        'Y-m-d H:i:s',
-                        $start_time
-                    ),
-                    'end_date' => date(
-                        'Y-m-d H:i:s',
-                        $schedule_end_time
-                    )
-                );
-            }
+            $entries[] = array(
+                'start_date' => date('Y-m-d H:i:s', $start_time),
+                'end_date' => date('Y-m-d H:i:s', $end_time),
+                'status' => $end_time < $now ? 'past' : 'future'
+            );
 
-
-            return $future_dates;
+            return $entries;
         }
 
-
+        $start_time_of_day = date('H:i:s', $start_time);
+        $end_time_of_day = date('H:i:s', $end_time);
         $current_occurrence = $start_time;
 
-
-        /*
-         * Limit displayed occurrences to 50,
-         * same as the existing implementation.
-         */
-        while (
-            $current_occurrence <= $schedule_end_time &&
-            count($future_dates) < 50
-        )
+        while ($current_occurrence <= $end_time && count($entries) < 1000)
         {
-            $occurrence_date = date(
-                'Y-m-d',
-                $current_occurrence
-            );
-
+            $occurrence_date = date('Y-m-d', $current_occurrence);
 
             $occurrence_start = strtotime(
-                $occurrence_date .
-                ' ' .
-                $start_time_of_day
+                $occurrence_date . ' ' . $start_time_of_day
             );
-
 
             $occurrence_end = strtotime(
-                $occurrence_date .
-                ' ' .
-                $end_time_of_day
+                $occurrence_date . ' ' . $end_time_of_day
             );
 
-
-            /*
-             * Only include upcoming occurrences.
-             */
-            if ($occurrence_end >= $current_datetime)
+            if ($occurrence_end > $end_time)
             {
-                $future_dates[] = array(
-                    'start_date' => date(
-                        'Y-m-d H:i:s',
-                        $occurrence_start
-                    ),
-                    'end_date' => date(
-                        'Y-m-d H:i:s',
-                        $occurrence_end
-                    )
-                );
+                break;
             }
 
+            $entries[] = array(
+                'start_date' => date('Y-m-d H:i:s', $occurrence_start),
+                'end_date' => date('Y-m-d H:i:s', $occurrence_end),
+                'status' => $occurrence_end < $now ? 'past' : 'future'
+            );
 
-            /*
-             * Move to next occurrence.
-             */
             switch ($frequency)
             {
                 case 'daily':
-                    $current_occurrence = strtotime(
-                        '+1 day',
-                        $current_occurrence
-                    );
+                    $current_occurrence = strtotime('+1 day', $current_occurrence);
                     break;
-
 
                 case 'weekly':
-                    $current_occurrence = strtotime(
-                        '+1 week',
-                        $current_occurrence
-                    );
+                    $current_occurrence = strtotime('+1 week', $current_occurrence);
                     break;
-
 
                 case 'monthly':
-                    $current_occurrence = strtotime(
-                        '+1 month',
-                        $current_occurrence
-                    );
+                    $current_occurrence = strtotime('+1 month', $current_occurrence);
                     break;
-
 
                 case 'quarterly':
-                    $current_occurrence = strtotime(
-                        '+3 months',
-                        $current_occurrence
-                    );
+                    $current_occurrence = strtotime('+3 months', $current_occurrence);
                     break;
-
 
                 default:
                     break 2;
             }
         }
 
-
-        return $future_dates;
+        return $entries;
     }
 }

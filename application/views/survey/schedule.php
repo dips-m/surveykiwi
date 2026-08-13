@@ -304,7 +304,7 @@
                         <h4 style="margin: 0; font-size: 14px; font-weight: 600; color: #334155;">
                             <i class="glyphicon glyphicon-time"
                                style="margin-right: 6px; color: #26a69a;"></i>
-                            Upcoming Schedules
+                            Schedules
                         </h4>
 
                         <small class="text-muted">
@@ -312,12 +312,15 @@
                         </small>
                     </div>
 
-                    <?php if (!empty($scheduleDates)): ?>
-                        <span class="label label-info"
-                              style="font-size: 11px; padding: 5px 8px;">
-                            <?php echo count($scheduleDates); ?>
-                        </span>
-                    <?php endif; ?>
+                    <div>
+                        <label for="schedule-filter" style="margin: 0 6px 0 0; font-size: 12px; color: #64748b;">Show:</label>
+                        <select id="schedule-filter" class="form-control input-sm" style="display: inline-block; width: 100px;">
+                            <option value="all" selected>All</option>
+                            <option value="future">Future</option>
+                            <option value="past">Past</option>
+                        </select>
+                    </div>
+
 
                 </div>
 
@@ -349,6 +352,9 @@
                                     <th style="padding: 10px 15px; color: #64748b;">
                                         End Time
                                     </th>
+                                    <th style="padding: 10px 15px; color: #64748b;">
+                                        Status
+                                    </th>
                                 </tr>
                             </thead>
 
@@ -356,11 +362,9 @@
 
                                 <?php foreach ($scheduleDates as $index => $scheduleValue): ?>
 
-                                    <tr class="schedule-row">
+                                    <tr class="schedule-row" data-status="<?php echo HTML::chars($scheduleValue['status']); ?>">
 
-                                        <td style="padding: 11px 15px; color: #64748b;">
-                                            <?php echo ($index + 1); ?>
-                                        </td>
+                                        <td class="schedule-index" style="padding: 11px 15px; color: #64748b;"></td>
 
                                         <td style="padding: 11px 15px;">
                                             <strong style="color: #334155;">
@@ -389,6 +393,13 @@
                                                 strtotime($scheduleValue['end_date'])
                                             );
                                             ?>
+                                        </td>
+                                        <td style="padding: 11px 15px;">
+                                            <?php if ($scheduleValue['status'] === 'future'): ?>
+                                                <span class="label label-info">Future</span>
+                                            <?php else: ?>
+                                                <span class="label label-default">Past</span>
+                                            <?php endif; ?>
                                         </td>
 
                                     </tr>
@@ -703,10 +714,6 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<!-- Pass the dynamic PHP URL to JavaScript -->
-<script type="text/javascript">
-    window.calculateFutureDatesUrl = '<?php echo URL::site('schedule/calculate_future_dates/' . $survey['id']); ?>';
-</script>
 
 <!-- Load the external JavaScript file -->
 <script type="text/javascript" src="<?php echo URL::base(); ?>assets/js/schedule-preview.js"></script>

@@ -19,25 +19,17 @@ class Controller_Schedule extends Controller_Template
         $participants = $participant_model->get_by_survey($id);
 
         // Calculate future dates if schedule exists
-        $scheduleDates = array();
+        $scheduleEntries = array();
 
-        if (
-            $schedule &&
-            !empty($schedule['frequency']) &&
-            !empty($schedule['start_date']) &&
-            !empty($schedule['end_date'])
-        ) {
-            $scheduleDates = $schedule_model->calculate_future_dates(
-                $schedule['frequency'],
-                $schedule['start_date'],
-                $schedule['end_date']
-            );
+        if ($schedule)
+        {
+            $scheduleEntries = $schedule_model->get_entries_by_schedule_id($schedule['id']);
         }
 
         $this->template->content = View::factory('survey/schedule')
             ->set('survey', $survey)
             ->set('schedule', $schedule)
-            ->set('scheduleDates', $scheduleDates)
+            ->set('scheduleDates', $scheduleEntries)
             ->set('participants', $participants);
     }
 
@@ -149,7 +141,7 @@ class Controller_Schedule extends Controller_Template
         catch (Exception $e)
         {
             Kohana::$log->add(
-                Kohana::ERROR,
+                Log::ERROR,
                 $e->getMessage()
             );
 

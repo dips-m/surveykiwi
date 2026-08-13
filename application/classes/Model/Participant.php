@@ -167,31 +167,50 @@ class Model_Participant
         }
 
         /*
-         * Replace existing participants with the
-         * newly imported participants.
-         */
-        DB::delete('survey_participants')
-            ->where('survey_id', '=', $survey_id)
-            ->execute();
+        * Replace existing participants.
+        *
+        * survey_invitations are related to survey_participants
+        * with ON DELETE CASCADE, so deleting participants
+        * automatically removes their invitations.
+        */
+        DB::query(NULL, 'START TRANSACTION')->execute();
 
-        foreach ($participants as $participant) {
-            DB::insert('survey_participants', array(
+        try
+        {
+            DB::delete('survey_participants')
+                ->where('survey_id', '=', $survey_id)
+                ->execute();
+
+            $insert = DB::insert('survey_participants', array(
                 'survey_id',
                 'first_name',
                 'last_name',
                 'email',
                 'created_at',
                 'updated_at'
-            ))
-                ->values(array(
+            ));
+
+            $now = date('Y-m-d H:i:s');
+
+            foreach ($participants as $participant)
+            {
+                $insert->values(array(
                     $participant['survey_id'],
                     $participant['first_name'],
                     $participant['last_name'],
                     $participant['email'],
-                    date('Y-m-d H:i:s'),
-                    date('Y-m-d H:i:s')
-                ))
-                ->execute();
+                    $now,
+                    $now
+                ));
+            }
+
+            $insert->execute();
+            DB::query(NULL, 'COMMIT')->execute();
+        }
+        catch (Exception $e)
+        {
+            DB::query(NULL, 'ROLLBACK')->execute();
+            throw $e;
         }
 
         return count($participants);
