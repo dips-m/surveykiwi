@@ -24,7 +24,6 @@ function clearFieldError(fieldId) {
 
 
 $(document).ready(function() {
-    
     var scheduleId = parseInt($('#schedule_id').val(), 10) || 0;
     var isEdit = scheduleId > 0;
     var startInput = $('#start_date');
@@ -169,6 +168,36 @@ $(document).ready(function() {
 
     $('#end_date').on('input change', function() {
         clearFieldError('end-date');
+    });
+
+
+    // Participant file change
+    $('#participants_file').on('change', function() {
+
+        clearFieldError('participants-file');
+
+        if (!this.files || this.files.length === 0) {
+            $('#file-chosen-name').text('No file chosen');
+            return;
+        }
+
+        var fileName = this.files[0].name;
+        var lowerFileName = fileName.toLowerCase();
+
+        if (lowerFileName.slice(-4) !== '.csv') {
+
+            showFieldError(
+                'participants-file',
+                'Please upload a valid CSV file.'
+            );
+
+            $(this).val('');
+            $('#file-chosen-name').text('No file chosen');
+
+            return;
+        }
+
+        $('#file-chosen-name').text(fileName);
     });
 
 
@@ -362,6 +391,7 @@ $(document).ready(function() {
 
 
         // IMPORTANT:
+        // serialize() does NOT send file inputs.
         // Use FormData.
         var formData = new FormData(form);
 
