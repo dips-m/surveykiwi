@@ -3,9 +3,13 @@
 
 class Controller_Participant extends Controller
 {
+    /**
+     * add single participant.
+     *
+     * AJAX POST only.
+     */
     public function action_add()
     {
-        // echo "ret"; die();
         if ($this->request->method() !== HTTP_Request::POST)
         {
             $this->_json_response(
