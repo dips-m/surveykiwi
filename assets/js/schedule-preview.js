@@ -192,6 +192,9 @@ $(document).ready(function() {
         var startDate = startDateVal ? new Date(startDateVal) : null;
         var endDate = endDateVal ? new Date(endDateVal) : null;
 
+        // Existing participant count
+        var existingParticipantsCount =
+            parseInt($('#total-participants-count').text(), 10) || 0;
 
         var hasNewFile =
             fileInput &&
@@ -277,6 +280,65 @@ $(document).ready(function() {
         }
 
 
+        // -----------------------------------------
+        // 4. Participants
+        //
+        // Create:
+        //     Existing count = 0
+        //     File required
+        //
+        // Edit:
+        //     Existing count > 0
+        //     File optional
+        //
+        // If a file is selected, always validate it.
+        // -----------------------------------------
+
+        if (!hasNewFile) {
+
+            // No new file selected.
+            // Only show error when there are no existing participants.
+
+            if (existingParticipantsCount === 0) {
+
+                showFieldError(
+                    'participants-file',
+                    'Participants are required. Please upload a CSV file.'
+                );
+
+                hasError = true;
+
+            } else {
+
+                // Existing participants are available,
+                // therefore CSV is optional during edit.
+
+                clearFieldError('participants-file');
+            }
+
+        } else {
+
+            // New file selected.
+            // Validate it regardless of existing participants.
+
+            var fileName =
+                fileInput.files[0].name.toLowerCase();
+
+            if (fileName.slice(-4) !== '.csv') {
+
+                showFieldError(
+                    'participants-file',
+                    'Please upload a valid CSV file.'
+                );
+
+                hasError = true;
+
+            } else {
+
+                clearFieldError('participants-file');
+            }
+        }
+
 
         // -----------------------------------------
         // Stop if validation failed
@@ -299,7 +361,10 @@ $(document).ready(function() {
             );
 
 
+        // IMPORTANT:
+        // Use FormData.
         var formData = new FormData(form);
+
 
         $.ajax({
 

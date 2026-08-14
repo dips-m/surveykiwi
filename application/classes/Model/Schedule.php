@@ -44,7 +44,7 @@ class Model_Schedule
      *
      * @return array
      */
-    public function validate_save($post, $survey_id, $schedule_id = 0)
+    public function validate_save($post, $survey_id, $file = NULL, $schedule_id = 0)
     {
         /*
          * Validate required schedule fields.
@@ -129,6 +129,59 @@ class Model_Schedule
             );
         }
 
+
+        /*
+         * Check existing participants.
+         */
+        $participant_model = Model::factory('Participant');
+
+        $existing_participants_count =
+        $participant_model->count_by_survey($survey_id);
+
+
+        /*
+         * Check whether a valid CSV file was uploaded.
+         */
+        $has_file = (
+            $file &&
+            isset($file['error']) &&
+            $file['error'] === UPLOAD_ERR_OK
+        );
+
+
+        /*
+         * CSV is required when no participants
+         * currently exist for the survey.
+         */
+        if (
+            (int) $existing_participants_count === 0 &&
+            !$has_file
+        )
+        {
+            return array(
+                'valid' => FALSE,
+                'message' => 'Participants are required. Please upload a CSV file.'
+            );
+        }
+
+
+        /*
+         * Validate CSV extension when uploaded.
+         */
+        if ($has_file)
+        {
+            $extension = strtolower(
+                pathinfo($file['name'], PATHINFO_EXTENSION)
+            );
+
+            if ($extension !== 'csv')
+            {
+                return array(
+                    'valid' => FALSE,
+                    'message' => 'Please upload a valid CSV file.'
+                );
+            }
+        }
 
 
         return array(

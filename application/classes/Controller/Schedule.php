@@ -43,12 +43,18 @@ class Controller_Schedule extends Controller_Template
 
             $schedule_model = Model::factory('Schedule');
 
+
+            $file = isset($_FILES['participants_file']) ? $_FILES['participants_file'] : NULL;
+
+            $has_file = ( $file && isset($file['error']) &&  $file['error'] === UPLOAD_ERR_OK);
+
             /*
-             * Validate schedule data
+             * Validate schedule data and participant CSV.
              */
             $validation = $schedule_model->validate_save(
                 $this->request->post(),
                 $id,
+                $file,
                 $schedule_id
 
             );
@@ -72,6 +78,27 @@ class Controller_Schedule extends Controller_Template
                 $this->request->post()
             );
 
+            /*
+             * Import participants only when a new CSV
+             * has been uploaded.
+             */
+            if ($has_file)
+            {
+                $participant_model = Model::factory('Participant');
+                $imported_count = $participant_model->import_csv(
+                    $id,
+                    $file
+                );
+
+                $this->_json_response(
+                    'success',
+                    'Schedule saved successfully. ' .
+                    $imported_count .
+                    ' participants imported.'
+                );
+
+                return;
+            }
 
             /*
              * Existing participants remain unchanged
