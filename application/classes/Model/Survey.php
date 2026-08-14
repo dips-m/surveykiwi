@@ -399,11 +399,7 @@ class Model_Survey
      * @param string $status
      * @return integer
      */
-    public function create_schedule_log(
-        $survey_id,
-        $executed_at,
-        $status
-    )
+    public function create_schedule_log($survey_id, $executed_at, $status)
     {
         list($id) = DB::insert('survey_schedule_logs')
             ->columns(array(
@@ -429,10 +425,7 @@ class Model_Survey
      * @param string $status
      * @return void
      */
-    public function update_schedule_log_status(
-        $id,
-        $status
-    )
+    public function update_schedule_log_status($id, $status)
     {
         DB::update('survey_schedule_logs')
             ->set(array(
@@ -451,11 +444,7 @@ class Model_Survey
      * @param string $status
      * @return integer
      */
-    public function create_invitation(
-        $schedule_entry_id,
-        $participant_id,
-        $status
-    )
+    public function create_invitation($schedule_entry_id, $participant_id, $status)
     {
         return DB::insert(
             'survey_invitations',
@@ -483,11 +472,7 @@ class Model_Survey
         ->execute();
     }
 
-    public function update_invitation_status(
-        $schedule_entry_id,
-        $participant_id,
-        $status
-    )
+    public function update_invitation_status($schedule_entry_id, $participant_id, $status)
     {
         return DB::update('survey_invitations')
             ->set(
@@ -512,11 +497,7 @@ class Model_Survey
             ->execute();
     }
 
-    public function save_invitation(
-        $schedule_entry_id,
-        $participant_id,
-        $status
-    )
+    public function save_invitation($schedule_entry_id, $participant_id, $status)
     {
         $existing = DB::select(
             'id'
@@ -563,10 +544,7 @@ class Model_Survey
      *
      * @return array|null
      */
-    public function get_schedule_log(
-        $survey_id,
-        $next_run_at
-    )
+    public function get_schedule_log($survey_id, $next_run_at)
     {
         return DB::select()
             ->from('survey_schedule_logs')
@@ -587,10 +565,7 @@ class Model_Survey
      *
      * @return array
      */
-    public function get_participants_with_invitation_status(
-        $survey_id,
-        $schedule_log_id
-    )
+    public function get_participants_with_invitation_status($survey_id, $schedule_log_id)
     {
         $participants = DB::select(
                 'id',
@@ -682,10 +657,7 @@ class Model_Survey
      *
      * @return array
      */
-    public function get_pending_participants(
-        $schedule_entry_id,
-        $survey_id
-    )
+    public function get_pending_participants($schedule_entry_id, $survey_id)
     {
         return DB::query(
             Database::SELECT,
@@ -720,5 +692,100 @@ class Model_Survey
         )
         ->execute()
         ->as_array();
+    }
+
+    /**
+     * Get schedule entries requiring creator notification.
+     *
+     * @return array
+     */
+    public function get_creator_notification_entries()
+    {
+        return DB::select(
+                'sse.id as schedule_id',
+                'sse.survey_schedule_id',
+                'sse.start_date',
+                'sse.end_date',
+                's.id',
+                's.title',
+                's.description'
+            )
+            ->from(
+                array('survey_schedule_entries', 'sse')
+            )
+            ->join(
+                array('survey_schedules', 'ss'),
+                'INNER'
+            )
+            ->on(
+                'ss.id',
+                '=',
+                'sse.survey_schedule_id'
+            )
+            ->join(
+                array('surveys', 's'),
+                'INNER'
+            )
+            ->on(
+                's.id',
+                '=',
+                'ss.survey_id'
+            )
+            ->where(
+                'ss.is_active',
+                '=',
+                1
+            )
+            ->where(
+                's.status',
+                '=',
+                'published'
+            )
+            ->where(
+                'sse.creator_email_sent',
+                '=',
+                0
+            )
+            ->where(
+                'sse.start_date',
+                '>=',
+                DB::expr('NOW()')
+            )
+            ->where(
+                'sse.start_date',
+                '<=',
+                DB::expr(
+                    'DATE_ADD(NOW(), INTERVAL 1 HOUR)'
+                )
+            )
+            ->order_by(
+                'sse.start_date',
+                'ASC'
+            )
+            ->execute()
+            ->as_array();
+    }
+
+    /**
+     * Mark creator notification as sent.
+     *
+     * @param int $entry_id
+     * @return void
+     */
+    public function mark_creator_email_sent($entry_id)
+    {
+        DB::update('survey_schedule_entries')
+            ->set(
+                array(
+                    'creator_email_sent' => 1,
+                    'updated_at' => DB::expr('NOW()')
+                )
+            )
+            ->where(
+                'id',
+                '=',
+                (int) $entry_id
+            )
+            ->execute();
     }
 }
