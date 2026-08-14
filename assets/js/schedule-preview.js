@@ -170,6 +170,28 @@ $(document).ready(function() {
         clearFieldError('end-date');
     });
 
+    function filterSchedules() {
+        var filter = $('#schedule-filter').val();
+        var visibleCount = 0;      
+
+        $('.schedule-row').each(function() {
+            var status = $(this).data('status');
+            var show = filter === 'all' || status === filter;
+
+            $(this).toggle(show);
+
+            if (show) {
+                visibleCount++;
+                $(this).find('.schedule-index').text(visibleCount);
+            }
+        });
+    }
+
+    $('#schedule-filter').on('change', function() {
+        filterSchedules();
+    });
+
+    filterSchedules();
 
     // Participant file change
     $('#participants_file').on('change', function() {

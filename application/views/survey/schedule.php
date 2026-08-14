@@ -302,6 +302,15 @@
                         </small>
                     </div>
 
+                    <div>
+                        <label for="schedule-filter" style="margin: 0 6px 0 0; font-size: 12px; color: #64748b;">Show:</label>
+                        <select id="schedule-filter" class="form-control input-sm" style="display: inline-block; width: 100px;">
+                            <option value="all" selected>All</option>
+                            <option value="future">Future</option>
+                            <option value="past">Past</option>
+                        </select>
+                    </div>
+
                 </div>
 
             </div>
@@ -454,34 +463,34 @@
             <!-- Body -->
             <div class="panel-body" style="padding: 0;">
                     <!-- Add Participant -->
-                <div style="padding: 12px 10px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                    <div style="padding: 12px 10px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
 
-                    <form id="add-participant-form" class="form-inline"
-                        style="display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;">
+                        <form id="add-participant-form"
+                            style="display: flex; align-items: center; gap: 8px; width: 100%;">
 
-                        <input type="hidden" name="survey_id" value="<?= (int) $survey['id'] ?>">
+                            <input type="hidden" name="survey_id" value="<?= (int) $survey['id'] ?>">
 
-                        <input
-                            type="text" name="first_name" id="participant-first-name" class="form-control input-field" placeholder="First Name" required
-                            style="width: 160px;">
+                            <input type="text" name="first_name" id="participant-first-name" class="form-control input-field" placeholder="First Name" required
+                                style="flex: 1; min-width: 0;">
 
-                        <input
-                            type="text" name="last_name" id="participant-last-name" class="form-control input-field" placeholder="Last Name" required
-                            style="width: 160px;">
+                            <input type="text" name="last_name" id="participant-last-name" class="form-control input-field" placeholder="Last Name" required
+                                style="flex: 1; min-width: 0;">
 
-                        <input
-                            type="email" name="email" id="participant-email" class="form-control input-field" placeholder="Email" required
-                            style="width: 240px;">
+                            <input type="email" name="email" id="participant-email" class="form-control input-field" placeholder="Email" required
+                                style="flex: 1.5; min-width: 0;">
 
-                        <button type="submit" id="add-participant-btn" class="btn btn-primary btn-sm" title="Add Participant" 
-                        style="background-color: #26a69a; border-color: #26a69a; padding: 8px 24px; font-weight: 500; border-radius: 6px; ">
-                            Add
-                        </button>
+                            <button type="submit" id="add-participant-btn" class="btn btn-primary btn-sm" title="Add Participant"
+                                    style="background-color: #26a69a; border-color: #26a69a; padding: 8px 20px; font-weight: 500; border-radius: 6px; flex: 0 0 auto; white-space: nowrap;">
+                                Add
+                            </button>
 
-                    </form>
+                        </form>
 
-                    <div id="participant-add-message" style="margin-top: 6px; font-size: 12px;"></div>
-                </div>
+                        <div id="participant-add-message"
+                            style="margin-top: 6px; font-size: 12px;">
+                        </div>
+
+                    </div>
 
                 <?php if (!empty($participants)): ?>
 
