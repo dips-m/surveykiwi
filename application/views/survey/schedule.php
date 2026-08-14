@@ -274,6 +274,153 @@
     </div>
 </div>
 
+<div class="row">
+
+    <!-- =========================
+         UPCOMING SCHEDULES
+    ========================== -->
+    <div class="col-md-12">
+
+        <div class="panel panel-default"
+             style="border-radius: 8px; border-color: #e2e8f0; box-shadow: none; height: auto; min-height: 655px;">
+
+            <!-- Header -->
+            <div class="panel-heading"
+                 style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-radius: 8px 8px 0 0; padding: 14px 16px;">
+
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+
+                    <div>
+                        <h4 style="margin: 0; font-size: 14px; font-weight: 600; color: #334155;">
+                            <i class="glyphicon glyphicon-time"
+                               style="margin-right: 6px; color: #26a69a;"></i>
+                            Schedules
+                        </h4>
+
+                        <small class="text-muted">
+                            <?php echo count($scheduleDates); ?> scheduled occurrence(s)
+                        </small>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Body -->
+            <div class="panel-body" style="padding: 0;">
+
+                <?php if (!empty($scheduleDates)): ?>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover"
+                               style="margin-bottom: 0; font-size: 13px;">
+
+                            <thead>
+                                <tr style="background: #f8fafc;">
+                                    <th style="width: 80px; padding: 10px 15px; color: #64748b;">
+                                        #
+                                    </th>
+
+                                    <th style="padding: 10px 15px; color: #64748b;">
+                                        Start Date
+                                    </th>
+
+                                    <th style="padding: 10px 15px; color: #64748b;">
+                                        Start Time
+                                    </th>
+
+                                    <th style="padding: 10px 15px; color: #64748b;">
+                                        End Time
+                                    </th>
+                                    <th style="padding: 10px 15px; color: #64748b;">
+                                        Status
+                                    </th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="schedule-list">
+
+                                <?php foreach ($scheduleDates as $index => $scheduleValue): ?>
+
+                                    <tr class="schedule-row" data-status="<?php echo HTML::chars($scheduleValue['status']); ?>">
+
+                                        <td class="schedule-index" style="padding: 11px 15px; color: #64748b;"><?php echo $index + 1; ?></td>
+
+                                        <td style="padding: 11px 15px;">
+                                            <strong style="color: #334155;">
+                                                <?php
+                                                echo date(
+                                                    'd M Y',
+                                                    strtotime($scheduleValue['start_date'])
+                                                );
+                                                ?>
+                                            </strong>
+                                        </td>
+
+                                        <td style="padding: 11px 15px;">
+                                            <?php
+                                            echo date(
+                                                'h:i A',
+                                                strtotime($scheduleValue['start_date'])
+                                            );
+                                            ?>
+                                        </td>
+
+                                        <td style="padding: 11px 15px;">
+                                            <?php
+                                            echo date(
+                                                'h:i A',
+                                                strtotime($scheduleValue['end_date'])
+                                            );
+                                            ?>
+                                        </td>
+                                        <td style="padding: 11px 15px;">
+                                            <?php if ($scheduleValue['status'] === 'future'): ?>
+                                                <span class="label label-info">Future</span>
+                                            <?php else: ?>
+                                                <span class="label label-default">Past</span>
+                                            <?php endif; ?>
+                                        </td>
+
+                                    </tr>
+
+                                <?php endforeach; ?>
+
+                            </tbody>
+
+                        </table>
+                    </div>
+
+                    <!-- Schedule Pagination -->
+                    <div id="schedule-pagination"
+                         style="text-align: center; padding: 10px 15px; border-top: 1px solid #e2e8f0;">
+                    </div>
+
+                <?php else: ?>
+
+                    <div style="padding: 100px 20px; text-align: center;">
+
+                        <i class="glyphicon glyphicon-calendar"
+                           style="font-size: 30px; color: #cbd5e1; margin-bottom: 10px;"></i>
+
+                        <p style="margin: 0; color: #64748b; font-size: 13px;">
+                            No upcoming schedules.
+                        </p>
+
+                        <small class="text-muted">
+                            Save a valid schedule configuration to generate execution dates.
+                        </small>
+
+                    </div>
+
+                <?php endif; ?>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
 
 <!-- =========== Script ============== -->
 
@@ -283,3 +430,5 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script type="text/javascript" src="<?php echo URL::base(); ?>assets/js/schedule-preview.js"></script>
+<script type="text/javascript" src="<?php echo URL::base(); ?>assets/js/pagination.js"></script>
+

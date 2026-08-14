@@ -15,10 +15,18 @@ class Controller_Schedule extends Controller_Template
         $schedule_model = Model::factory('Schedule');
         $schedule = $schedule_model->get_by_survey_id($id);
 
+        // Calculate future dates if schedule exists
+        $scheduleEntries = array();
+
+        if ($schedule)
+        {
+            $scheduleEntries = $schedule_model->get_entries_by_schedule_id($schedule['id']);
+        }
 
         $this->template->content = View::factory('survey/schedule')
             ->set('survey', $survey)
-            ->set('schedule', $schedule);
+            ->set('schedule', $schedule)
+            ->set('scheduleDates', $scheduleEntries);
     }
 
 
