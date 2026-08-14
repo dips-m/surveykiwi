@@ -66,17 +66,18 @@ CREATE TABLE `survey_participants` (
 --
 CREATE TABLE `survey_invitations` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
-  `survey_id` bigint UNSIGNED DEFAULT NULL,
+  `survey_schedule_entry_id` bigint UNSIGNED NOT NULL,
   `survey_participant_id` bigint UNSIGNED NOT NULL,
-  `status` enum('sent','fail') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'sent',
+  `status` enum('sent','fail') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'fail',
   `sent_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `survey_invitations_survey_participant_id_foreign` (`survey_participant_id`),
+  KEY `survey_invitations_schedule_entry_id_index` (`survey_schedule_entry_id`),
+  KEY `survey_invitations_survey_participant_id_index` (`survey_participant_id`),
+  CONSTRAINT `survey_invitations_schedule_entry_id_foreign` FOREIGN KEY (`survey_schedule_entry_id`) REFERENCES `survey_schedule_entries` (`id`) ON DELETE CASCADE,
   CONSTRAINT `survey_invitations_survey_participant_id_foreign` FOREIGN KEY (`survey_participant_id`) REFERENCES `survey_participants` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
 
 -- --------------------------------------------------------
 
