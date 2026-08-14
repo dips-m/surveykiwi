@@ -86,6 +86,86 @@
                     <div class="row"
                         style="display: flex; flex-wrap: wrap; align-items: flex-start; margin-top: 15px;">
 
+                        <!-- Participants -->
+                        <div id="group-participants-file"
+                            class="col-md-4"
+                            style="padding-right: 10px; padding-left: 10px;">
+
+                            <label for="participants_file"
+                                class="control-label"
+                                style="
+                                    font-size: 13px;
+                                    font-weight: 500;
+                                    color: #475569;
+                                    margin-bottom: 6px;
+                                ">
+
+                                Participants
+                                <span class="text-muted"
+                                    style="font-weight: 400;">
+                                    (CSV)
+                                </span>
+
+                            </label>
+
+                            <div style="
+                                display: flex;
+                                align-items: center;
+                                width: 100%;
+                            ">
+
+                                <label class="btn btn-default"
+                                    style="
+                                        background-color: #ffffff;
+                                        border-color: #cbd5e1;
+                                        font-weight: 500;
+                                        color: #334155;
+                                        border-radius: 6px;
+                                        margin-bottom: 0;
+                                        cursor: pointer;
+                                        white-space: nowrap;
+                                    ">
+
+                                    <i class="glyphicon glyphicon-folder-open"></i>
+                                    Choose CSV
+
+                                    <input type="file"
+                                        id="participants_file"
+                                        name="participants_file"
+                                        accept=".csv"
+                                        style="display: none;"
+                                        onchange="
+                                            document.getElementById('file-chosen-name').textContent =
+                                            this.files[0] ? this.files[0].name : 'No file chosen';
+                                        ">
+
+                                </label>
+
+                                <span id="file-chosen-name"
+                                    class="text-muted"
+                                    style="
+                                        font-size: 12px;
+                                        margin-left: 8px;
+                                        overflow: hidden;
+                                        text-overflow: ellipsis;
+                                        white-space: nowrap;
+                                    ">
+                                    No file chosen
+                                </span>
+
+                            </div>
+
+                            <span id="err-participants-file"
+                                class="help-block text-danger"
+                                style="
+                                    font-size: 12px;
+                                    margin-top: 4px;
+                                    margin-bottom: 0;
+                                    display: none;
+                                ">
+                            </span>
+
+                        </div>
 
 
                         <!-- Status -->
