@@ -112,7 +112,7 @@
                             </a>
                             <!-- Schedule -->
                             <a
-                                href="/survey/schedule/<?php echo (int) $survey['id']; ?>"
+                                href="<?php echo URL::site('schedule/'.$survey['id']); ?>"
                                 class="sk-icon-action"
                                 title="Schedule Survey"
                                 aria-label="Schedule Survey"
