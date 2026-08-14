@@ -470,34 +470,16 @@
 
                             <input type="hidden" name="survey_id" value="<?= (int) $survey['id'] ?>">
 
-                            <input type="text"
-                                name="first_name"
-                                id="participant-first-name"
-                                class="form-control input-field"
-                                placeholder="First Name"
-                                required
+                            <input type="text" name="first_name" id="participant-first-name" class="form-control input-field" placeholder="First Name" required
                                 style="flex: 1; min-width: 0;">
 
-                            <input type="text"
-                                name="last_name"
-                                id="participant-last-name"
-                                class="form-control input-field"
-                                placeholder="Last Name"
-                                required
+                            <input type="text" name="last_name" id="participant-last-name" class="form-control input-field" placeholder="Last Name" required
                                 style="flex: 1; min-width: 0;">
 
-                            <input type="email"
-                                name="email"
-                                id="participant-email"
-                                class="form-control input-field"
-                                placeholder="Email"
-                                required
+                            <input type="email" name="email" id="participant-email" class="form-control input-field" placeholder="Email" required
                                 style="flex: 1.5; min-width: 0;">
 
-                            <button type="submit"
-                                    id="add-participant-btn"
-                                    class="btn btn-primary btn-sm"
-                                    title="Add Participant"
+                            <button type="submit" id="add-participant-btn" class="btn btn-primary btn-sm" title="Add Participant"
                                     style="background-color: #26a69a; border-color: #26a69a; padding: 8px 20px; font-weight: 500; border-radius: 6px; flex: 0 0 auto; white-space: nowrap;">
                                 Add
                             </button>
