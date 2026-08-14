@@ -39,6 +39,32 @@ class Model_Participant
             ->get('total');
     }
 
+    /**
+     * Check whether an email already exists for a survey.
+     *
+     * @param integer      $survey_id
+     * @param string       $email
+     * @param integer|null $exclude_id
+     *
+     * @return boolean
+     */
+    public function email_exists($survey_id, $email, $exclude_id = NULL)
+    {
+        $query = DB::select(
+                array(DB::expr('COUNT(*)'), 'total')
+            )
+            ->from('survey_participants')
+            ->where('survey_id', '=', (int) $survey_id)
+            ->where('email', '=', trim($email));
+
+        // During edit, exclude the current participant.
+        if ($exclude_id !== NULL  && (int) $exclude_id > 0)
+        {
+            $query->where('id', '!=', (int) $exclude_id);
+        }
+
+        return (int) $query->execute()->get('total') > 0;
+    }
 
 
     /**
@@ -190,4 +216,91 @@ class Model_Participant
         return count($participants);
     }
 
+    public function create($survey_id, $first_name, $last_name, $email)
+    {
+        $survey_id = (int) $survey_id;
+
+        if ($survey_id <= 0)
+        {
+            throw new Exception('Invalid survey.');
+        }
+
+        $first_name = trim($first_name);
+        $last_name = trim($last_name);
+        $email = trim($email);
+
+        if ($first_name === '')
+        {
+            throw new Exception('First name is required.');
+        }
+
+        if ($last_name === '')
+        {
+            throw new Exception('Last name is required.');
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL))
+        {
+            throw new Exception('Please enter a valid email address.');
+        }
+
+        list($participant_id, $rows) = DB::insert(
+            'survey_participants',
+            array(
+                'survey_id',
+                'first_name',
+                'last_name',
+                'email',
+                'created_at',
+                'updated_at'
+            )
+        )
+            ->values(array(
+                $survey_id,
+                $first_name,
+                $last_name,
+                $email,
+                date('Y-m-d H:i:s'),
+                date('Y-m-d H:i:s')
+            ))
+            ->execute();
+
+        return $participant_id;
+    }
+
+    /**
+     * Update a participant.
+     *
+     * @param integer $id
+     * @param array   $data
+     *
+     * @return integer
+     */
+    public function update($id, $data)
+    {
+        return DB::update('survey_participants')
+            ->set(array(
+                'first_name' => $data['first_name'],
+                'last_name'  => $data['last_name'],
+                'email'      => $data['email'],
+                'updated_at' => date('Y-m-d H:i:s')
+            ))
+            ->where('id', '=', (int) $id)
+            ->execute();
+    }
+
+
+    /**
+     * Delete a participant.
+     *
+     * @param integer $id
+     *
+     * @return integer
+     */
+    public function delete($id)
+    {
+        return DB::delete('survey_participants')
+            ->where('id', '=', (int) $id)
+            ->execute();
+    }
 }

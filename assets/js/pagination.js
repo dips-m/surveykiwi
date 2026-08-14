@@ -125,4 +125,11 @@
             '#schedule-pagination'
         );
 
+
+        // Participants pagination
+        setupPagination(
+            '#participants-list .participant-row',
+            '#participants-pagination'
+        );
+
     });

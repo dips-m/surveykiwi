@@ -23,10 +23,14 @@ class Controller_Schedule extends Controller_Template
             $scheduleEntries = $schedule_model->get_entries_by_schedule_id($schedule['id']);
         }
 
+        $participant_model = Model::factory('Participant');
+        $participants = $participant_model->get_by_survey($id);
+
         $this->template->content = View::factory('survey/schedule')
             ->set('survey', $survey)
             ->set('schedule', $schedule)
-            ->set('scheduleDates', $scheduleEntries);
+            ->set('scheduleDates', $scheduleEntries)
+            ->set('participants', $participants);
     }
 
 

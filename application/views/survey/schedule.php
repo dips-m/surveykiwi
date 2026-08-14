@@ -277,9 +277,9 @@
 <div class="row">
 
     <!-- =========================
-         UPCOMING SCHEDULES
+        UPCOMING SCHEDULES
     ========================== -->
-    <div class="col-md-12">
+    <div class="col-md-6">
 
         <div class="panel panel-default"
              style="border-radius: 8px; border-color: #e2e8f0; box-shadow: none; height: auto; min-height: 655px;">
@@ -420,6 +420,220 @@
         </div>
 
     </div>
+
+        <!-- =========================
+        PARTICIPANTS
+    ========================== -->
+    <div class="col-md-6">
+        <div class="panel panel-default"
+             style="border-radius: 8px; border-color: #e2e8f0; box-shadow: none; height: auto; min-height: 655px;">
+            <!-- Header -->
+            <div class="panel-heading"
+                 style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-radius: 8px 8px 0 0; padding: 14px 16px;">
+
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+
+                    <div>
+                        <h4 style="margin: 0; font-size: 14px; font-weight: 600; color: #334155;">
+                            <i class="glyphicon glyphicon-user"
+                               style="margin-right: 6px; color: #26a69a;"></i>
+                            Participants
+                        </h4>
+
+                        <small class="text-muted">Uploaded participants</small>
+                    </div>
+
+                    <span class="label label-success" style="font-size: 11px; padding: 5px 8px;">
+                        <span id="total-participants-count"><?php echo count($participants); ?></span>Total
+                    </span>
+
+                </div>
+
+
+            </div>
+            <!-- Body -->
+            <div class="panel-body" style="padding: 0;">
+                    <!-- Add Participant -->
+                <div style="padding: 12px 10px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+
+                    <form id="add-participant-form" class="form-inline"
+                        style="display: flex; align-items: center; gap: 8px; flex-wrap: nowrap;">
+
+                        <input type="hidden" name="survey_id" value="<?= (int) $survey['id'] ?>">
+
+                        <input
+                            type="text" name="first_name" id="participant-first-name" class="form-control input-field" placeholder="First Name" required
+                            style="width: 160px;">
+
+                        <input
+                            type="text" name="last_name" id="participant-last-name" class="form-control input-field" placeholder="Last Name" required
+                            style="width: 160px;">
+
+                        <input
+                            type="email" name="email" id="participant-email" class="form-control input-field" placeholder="Email" required
+                            style="width: 240px;">
+
+                        <button type="submit" id="add-participant-btn" class="btn btn-primary btn-sm" title="Add Participant" 
+                        style="background-color: #26a69a; border-color: #26a69a; padding: 8px 24px; font-weight: 500; border-radius: 6px; ">
+                            Add
+                        </button>
+
+                    </form>
+
+                    <div id="participant-add-message" style="margin-top: 6px; font-size: 12px;"></div>
+                </div>
+
+                <?php if (!empty($participants)): ?>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover" style="margin-bottom: 0; font-size: 13px;">
+
+                            <thead>
+                                <tr style="background: #f8fafc;">
+
+                                    <th style="width: 55px; padding: 10px 12px; color: #64748b;">
+                                        #
+                                    </th>
+
+                                    <th style="padding: 10px 12px; color: #64748b;">
+                                        First Name
+                                    </th>
+
+                                    <th style="padding: 10px 12px; color: #64748b;">
+                                        Last Name
+                                    </th>
+
+                                    <th style="padding: 10px 12px; color: #64748b;">
+                                        Email
+                                    </th>
+                                    <th class="px-4 py-3 text-right text-sm font-medium text-slate-600">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="participants-list">
+
+                                <?php foreach ($participants as $index => $p): ?>
+
+                                    <tr
+                                        class="participant-row"
+                                        data-participant-id="<?php echo (int) $p['id']; ?>"
+                                        data-survey-id="<?php echo (int)  $survey['id']; ?>"
+                                    >
+
+                                        <td style="padding: 10px 12px; color: #94a3b8;">
+                                            <?php echo ($index + 1); ?>
+                                        </td>
+
+                                        <!-- First Name -->
+                                        <td style="padding: 10px 12px; color: #334155;">
+
+                                            <span class="participant-first-name-text">
+                                                <?php echo HTML::chars($p['first_name']); ?>
+                                            </span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control participant-first-name-input hidden"
+                                                value="<?php echo HTML::chars($p['first_name']); ?>"
+                                            >
+
+                                        </td>
+
+                                        <!-- Last Name -->
+                                        <td style="padding: 10px 12px; color: #334155;">
+
+                                            <span class="participant-last-name-text">
+                                                <?php echo HTML::chars($p['last_name']); ?>
+                                            </span>
+
+                                            <input
+                                                type="text"
+                                                class="form-control participant-last-name-input hidden"
+                                                value="<?php echo HTML::chars($p['last_name']); ?>"
+                                            >
+
+                                        </td>
+
+                                        <!-- Email -->
+                                        <td style="padding: 10px 12px; color: #64748b;">
+
+                                            <span class="participant-email-text">
+                                                <?php echo HTML::chars($p['email']); ?>
+                                            </span>
+
+                                            <input
+                                                type="email"
+                                                class="form-control participant-email-input hidden"
+                                                value="<?php echo HTML::chars($p['email']); ?>"
+                                            >
+
+                                        </td>
+
+                                        <!-- Actions -->
+                                        <td class="px-4 py-3 text-right whitespace-nowrap">
+
+                                            <!-- Normal actions -->
+                                            <div class="participant-actions">
+                                                <button type="button" class="participant-edit-btn">
+                                                    <i class="glyphicon glyphicon-pencil"></i>
+                                                </button>
+
+                                                <button type="button" class="participant-delete-btn dt-button">
+                                                    <i class="glyphicon glyphicon-trash"></i>
+                                                </button>
+                                            </div>
+
+                                            <!-- Edit actions -->
+                                            <div class="participant-edit-actions hidden">
+
+                                                <button type="button" class="participant-save-btn dt-button">
+                                                    <i class="glyphicon glyphicon-ok"></i>
+                                                </button>
+
+                                                <button type="button" class="participant-cancel-btn dt-button">
+                                                    <i class="glyphicon glyphicon-remove"></i>
+                                                </button>
+
+                                            </div>
+
+                                        </td>
+
+                                    </tr>
+
+                                <?php endforeach; ?>
+
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Participants Pagination -->
+                    <div id="participants-pagination"
+                         style="text-align: center; padding: 10px 15px; border-top: 1px solid #e2e8f0;">
+                    </div>
+
+                <?php else: ?>
+
+                    <div style="padding: 40px 20px; text-align: center;">
+
+                        <i class="glyphicon glyphicon-user"
+                           style="font-size: 30px; color: #cbd5e1; margin-bottom: 10px;"></i>
+
+                        <p style="margin: 0; color: #64748b; font-size: 13px;">
+                            No participants uploaded yet.
+                        </p>
+
+                        <small class="text-muted">
+                            Upload a CSV file above to add participants.
+                        </small>
+
+                    </div>
+
+                <?php endif; ?>
+
+            </div>
+        </div>
+    </div>
 </div>
 
 <!-- =========== Script ============== -->
@@ -429,6 +643,15 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
+<script>
+    window.participantUrls = {
+        add: '<?= URL::site('participant/add') ?>',
+        edit: '<?= URL::site('participant/edit') ?>',
+        delete: '<?= URL::site('participant/delete') ?>'
+    };
+</script>
+
+<script type="text/javascript" src="<?php echo URL::base(); ?>assets/js/participant.js"></script>
 <script type="text/javascript" src="<?php echo URL::base(); ?>assets/js/schedule-preview.js"></script>
 <script type="text/javascript" src="<?php echo URL::base(); ?>assets/js/pagination.js"></script>
 
