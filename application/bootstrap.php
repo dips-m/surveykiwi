@@ -125,6 +125,15 @@ Kohana::modules(array(
 	));
 
 /**
+ * Survey schedule
+ */
+Route::set('schedule', 'schedule(/<id>)')
+    ->defaults(array(
+        'controller' => 'schedule',
+        'action'     => 'index',
+    ));
+
+/**
  * Survey list
  */
 Route::set('survey', 'survey')
