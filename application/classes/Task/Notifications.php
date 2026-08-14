@@ -31,23 +31,18 @@ class Task_Notifications extends Minion_Task
         echo 'Survey notification task started.'
             . PHP_EOL;
 
-
         $survey_model = new Model_Survey();
         $mailer = new Service_Mailer();
 
-
         /*
-         * Get surveys scheduled to start within
-         * the next one hour.
-         */
+        * Participant notification flow.
+        */
         $schedules =
             $survey_model->get_upcoming_schedules();
-
 
         echo 'Upcoming surveys found: '
             . count($schedules)
             . PHP_EOL;
-
 
         foreach ($schedules as $schedule)
         {
@@ -58,6 +53,13 @@ class Task_Notifications extends Minion_Task
             );
         }
 
+        /*
+        * Creator notifications.
+        */
+        $this->_send_creator_notifications(
+            $survey_model,
+            $mailer
+        );
 
         echo 'Survey notification task completed.'
             . PHP_EOL;
@@ -73,11 +75,7 @@ class Task_Notifications extends Minion_Task
      *
      * @return void
      */
-    protected function _process_schedule(
-        Model_Survey $survey_model,
-        Service_Mailer $mailer,
-        array $schedule
-    )
+    protected function _process_schedule(Model_Survey $survey_model, Service_Mailer $mailer, array $schedule)
     {
         echo PHP_EOL;
     
@@ -149,6 +147,56 @@ class Task_Notifications extends Minion_Task
     
                 echo $participant['email']
                     . ' ........ FAILED'
+                    . PHP_EOL;
+            }
+        }
+    }
+
+    /**
+     * Send notification to survey creators for surveys
+     * starting within the next hour.
+     *
+     * @param Model_Survey   $survey_model
+     * @param Service_Mailer $mailer
+     * @return void
+     */
+    protected function _send_creator_notifications(Model_Survey $survey_model, Service_Mailer $mailer)
+    {
+        echo PHP_EOL;
+        echo 'Checking creator notifications...'
+            . PHP_EOL;
+
+        $entries =
+            $survey_model->get_creator_notification_entries();
+
+        echo 'Creator notifications found: '
+            . count($entries)
+            . PHP_EOL;
+
+        foreach ($entries as $entry)
+        {
+            echo 'Sending creator notification for survey: '
+                . $entry['title']
+                . PHP_EOL;
+
+            echo 'Survey starts at: '
+                . $entry['start_date']
+                . PHP_EOL;
+
+            $sent = $mailer->send_creator_notification($entry);
+
+            if ($sent)
+            {
+                $survey_model->mark_creator_email_sent(
+                    $entry['schedule_id']
+                );
+
+                echo 'Creator notification ........ SENT'
+                    . PHP_EOL;
+            }
+            else
+            {
+                echo 'Creator notification ........ FAILED'
                     . PHP_EOL;
             }
         }

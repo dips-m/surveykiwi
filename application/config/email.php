@@ -14,4 +14,11 @@ return array(
         'email' => 'no-reply@surveykiwi.test',
         'name' => 'SurveyKiwi',
     ),
+
+    /*
+     * Temporary survey creator email.
+     *
+     * This will later come from the User/Creator module.
+     */
+    'creator_email' => 'john@example.com',
 );
