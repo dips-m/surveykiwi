@@ -173,9 +173,9 @@
                                 ">
                             </span>
                             <div style="margin-top: 6px;">
-                                <a href="<?= URL::base(); ?>database/sample/survey_participants%20-%202026.csv"
+                                <a href="<?= URL::base(); ?>database/sample/survey_participants-2026.csv"
                                 download
-                                style="font-size: 12px; color: #26a69a; text-decoration: none;">
+                                style="font-size: 12px; color: #2e5490; text-decoration: none;">
                                     <i class="glyphicon glyphicon-download-alt"
                                     style="margin-right: 4px;"></i>
                                     Download Sample Participant CSV
@@ -276,7 +276,7 @@
                     <div class="row" style="display: flex; flex-wrap: wrap; align-items: flex-start; margin-top: 15px;">
                         <!-- Submit Button -->
                         <div class="col-md-12 text-right" style="padding-top: 28px;">
-                            <button type="submit" class="btn btn-primary" style="background-color: #26a69a; border-color: #26a69a; padding: 8px 24px; font-weight: 500; border-radius: 6px; ">
+                            <button type="submit" class="btn btn-primary" style="background-color: #2e5490; border-color: #2e5490; padding: 8px 24px; font-weight: 500; border-radius: 6px; ">
                                 Save Schedule
                             </button>
                         </div>
@@ -310,7 +310,7 @@
                     <div>
                         <h4 style="margin: 0; font-size: 14px; font-weight: 600; color: #334155;">
                             <i class="glyphicon glyphicon-time"
-                               style="margin-right: 6px; color: #26a69a;"></i>
+                               style="margin-right: 6px; color: #2e5490;"></i>
                             Schedules
                         </h4>
 
@@ -462,15 +462,15 @@
                     <div>
                         <h4 style="margin: 0; font-size: 14px; font-weight: 600; color: #334155;">
                             <i class="glyphicon glyphicon-user"
-                               style="margin-right: 6px; color: #26a69a;"></i>
+                               style="margin-right: 6px; color: #2e5490;"></i>
                             Participants
                         </h4>
 
                         <small class="text-muted">Uploaded participants</small>
                     </div>
 
-                    <span class="label label-success" style="font-size: 11px; padding: 5px 8px;">
-                        <span id="total-participants-count"><?php echo !empty($participants) ? count($participants) : 0; ?></span>Total
+                    <span class="label label-success" style="font-size: 11px; padding: 5px 8px; color: #2e5490; background-color: #e8edf6">
+                        <span id="total-participants-count"><?php echo !empty($participants) ? count($participants) : 0; ?></span> Total
                     </span>
 
                 </div>
@@ -497,7 +497,7 @@
                                 style="flex: 1.5; min-width: 0;">
 
                             <button type="submit" id="add-participant-btn" class="btn btn-primary btn-sm" title="Add Participant"
-                                    style="background-color: #26a69a; border-color: #26a69a; padding: 8px 20px; font-weight: 500; border-radius: 6px; flex: 0 0 auto; white-space: nowrap;">
+                                    style="background-color: #2e5490; border-color: #2e5490; padding: 8px 20px; font-weight: 500; border-radius: 6px; flex: 0 0 auto; white-space: nowrap;">
                                 Add
                             </button>
 

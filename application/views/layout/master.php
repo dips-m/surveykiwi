@@ -15,6 +15,11 @@
             href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
         >
 
+        <link
+            href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap"
+            rel="stylesheet"
+        >
+
         <!-- SurveyKiwi CSS -->
         <link rel="stylesheet" href="/assets/css/app.css">
     </head>
