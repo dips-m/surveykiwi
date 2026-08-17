@@ -82,26 +82,24 @@ Copy the example config file, copy `database.example` to `database`:
 cp application/config/database.php.example application/config/database.php
 ```
 
+Open the copied file:
+
 ```text
 application/config/database.php
 ```
-```php
-'connection' => array(
-    'dsn'        => 'mysql:host=db;dbname=surveykiwi;charset=utf8',
-=======
-Update the connection credentials:
+
+Update the connection credentials, keeping the `dsn` value as-is:
 
 ```php
 'connection' => array(
-    'hostname'   => 'surveykiwi_db',
-    'database'   => 'surveykiwi',
->>>>>>> 6bc7269 (Fix:database schema, update CSS, add sample participants and README)
+    'dsn'        => 'mysql:host=db;dbname=surveykiwi;charset=utf8',
     'username'   => 'root',
     'password'   => 'YOUR_DATABASE_PASSWORD',
     'persistent' => FALSE,
 ),
-``` 
-Replace `YOUR_DATABASE_PASSWORD` with the MySQL/MariaDB root password configured in your Docker setup.
+```
+
+Replace `YOUR_DATABASE_PASSWORD` with the MySQL/MariaDB root password configured in your Docker setup. Leave `dsn` unchanged — it's already set to match the Docker service name and database used by this project.
 
 ### 5. Configure cookie salt
 
