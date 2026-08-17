@@ -128,7 +128,7 @@
                                 <a
                                     href="<?php
                                     echo URL::site(
-                                        'survey/schedule/'
+                                        'schedule/'
                                         . (int) $survey['id']
                                     );
                                     ?>"
