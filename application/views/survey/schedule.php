@@ -343,22 +343,22 @@
 
                             <thead>
                                 <tr style="background: #f8fafc;">
-                                    <th style="width: 80px; padding: 10px 15px; color: #64748b;">
+                                    <th style="width: 55px; padding: 10px 15px; color: #64748b;">
                                         #
                                     </th>
 
-                                    <th style="padding: 10px 15px; color: #64748b;">
+                                    <th style="min-width: 150px; padding: 10px 15px; color: #64748b;">
                                         Start Date
                                     </th>
 
-                                    <th style="padding: 10px 15px; color: #64748b;">
+                                    <th style="min-width: 130px; padding: 10px 15px; color: #64748b;">
                                         Start Time
                                     </th>
 
-                                    <th style="padding: 10px 15px; color: #64748b;">
+                                    <th style="min-width: 130px; padding: 10px 15px; color: #64748b;">
                                         End Time
                                     </th>
-                                    <th style="padding: 10px 15px; color: #64748b;">
+                                    <th style="min-width: 100px; padding: 10px 15px; color: #64748b;">
                                         Status
                                     </th>
                                 </tr>
