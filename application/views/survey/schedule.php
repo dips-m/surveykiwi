@@ -298,7 +298,7 @@
                         </h4>
 
                         <small class="text-muted">
-                            <?php echo count($scheduleDates); ?> scheduled occurrence(s)
+                            <?php echo !empty($scheduleDates) ? count($scheduleDates) : 0; ?> scheduled occurrence(s)
                         </small>
                     </div>
 
@@ -453,7 +453,7 @@
                     </div>
 
                     <span class="label label-success" style="font-size: 11px; padding: 5px 8px;">
-                        <span id="total-participants-count"><?php echo count($participants); ?></span>Total
+                        <span id="total-participants-count"><?php echo !empty($participants) ? count($participants) : 0; ?></span>Total
                     </span>
 
                 </div>
