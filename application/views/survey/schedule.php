@@ -154,6 +154,14 @@
                                 </span>
 
                             </div>
+                            <?php if ( !empty($participants) && count($participants) > 0): ?>
+                                <span class="text-warning"
+                                    style="font-size:12px; display:block; margin-top:6px;">
+                                    <i class="glyphicon glyphicon-warning-sign"></i>
+                                    Note: Uploading a new CSV will delete the existing
+                                    <?php echo count($participants); ?> participants.
+                                </span>
+                            <?php endif; ?>
 
                             <span id="err-participants-file"
                                 class="help-block text-danger"
@@ -164,6 +172,15 @@
                                     display: none;
                                 ">
                             </span>
+                            <div style="margin-top: 6px;">
+                                <a href="<?= URL::base(); ?>database/sample/survey_participants%20-%202026.csv"
+                                download
+                                style="font-size: 12px; color: #26a69a; text-decoration: none;">
+                                    <i class="glyphicon glyphicon-download-alt"
+                                    style="margin-right: 4px;"></i>
+                                    Download Sample Participant CSV
+                                </a>
+                            </div>
 
                         </div>
 
