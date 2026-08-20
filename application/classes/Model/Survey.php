@@ -3,10 +3,33 @@
 
 class Model_Survey
 {
+
+    /**
+     * Survey status
+     */
+    const STATUS_DRAFT     = 'draft';
+    const STATUS_PUBLISHED = 'published';
+    const STATUS_CLOSED    = 'closed';
+
     /**
      * Number of surveys displayed per page.
      */
     const ITEMS_PER_PAGE = 10;
+
+    /**
+     * Allowed values for the status field. Kept in one place so
+     * the controller, model, and validation rule can't drift.
+     *
+     * @return array
+     */
+    public static function statuses()
+    {
+        return array(
+            self::STATUS_DRAFT,
+            self::STATUS_PUBLISHED,
+            self::STATUS_CLOSED,
+        );
+    }
 
     /**
      * Get surveys for dashboard.
@@ -204,6 +227,129 @@ class Model_Survey
             ->current();
     }
 
+    /**
+     * Default field set for a brand new, unsaved survey (used by the
+     * "create" form).
+     */
+    public static function blank()
+    {
+        return array(
+            'id'          => NULL,
+            'title'       => '',
+            'description' => '',
+            'status'      => self::STATUS_DRAFT,
+            'starts_at'   => '',
+            'ends_at'     => '',
+        );
+    }
+ 
+    /**
+     * @return array|FALSE
+     */
+    public static function find($id)
+    {
+        $row = DB::select('*')
+            ->from('surveys')
+            ->where('id', '=', (int) $id)
+            ->limit(1)
+            ->execute()
+            ->current();
+ 
+        return $row ? $row : FALSE;
+    }
+ 
+    public static function exists($id)
+    {
+        $count = DB::select(array(DB::expr('COUNT(*)'), 'total'))
+            ->from('surveys')
+            ->where('id', '=', (int) $id)
+            ->execute()
+            ->get('total');
+ 
+        return (int) $count > 0;
+    }
+ 
+    /**
+     * @return int newly created survey id
+     */
+    public static function create(array $data)
+    {
+        $now = date('Y-m-d H:i:s');
+ 
+        list($id) = DB::insert('surveys', array(
+                'title', 'description', 'status', 'created_at', 'updated_at',
+            ))
+            ->values(array(
+                $data['title'],
+                $data['description'],
+                $data['status'],
+                $now,
+                $now,
+            ))
+            ->execute();
+ 
+        return (int) $id;
+    }
+
+    public static function save_details($id, array $data)
+    {
+        DB::update('surveys')
+            ->set(array(
+                'title'       => $data['title'],
+                'description' => $data['description'],
+                'status'      => $data['status'],
+                'updated_at'  => date('Y-m-d H:i:s'),
+            ))
+            ->where('id', '=', (int) $id)
+            ->execute();
+
+        return TRUE;
+    }
+
+    public function get_published_survey($survey_id)
+    {
+        return DB::select()
+            ->from('surveys')
+            ->where('id', '=', $survey_id)
+            ->where('status', '=', 'published')
+            ->execute()
+            ->current();
+    }
+
+    public function get_survey_questions($survey_id)
+    {
+        return DB::select()
+            ->from('survey_questions')
+            ->where('survey_id', '=', $survey_id)
+            ->order_by('sort_order', 'ASC')
+            ->execute()
+            ->as_array();
+    }
+ 
+    public static function update($id, array $data)
+    {
+        return (bool) DB::update('surveys')
+            ->set(array(
+                'title'       => $data['title'],
+                'description' => $data['description'],
+                'status'      => $data['status'],
+                'updated_at'  => date('Y-m-d H:i:s'),
+            ))
+            ->where('id', '=', (int) $id)
+            ->execute();
+    }
+ 
+    public static function save_schedule($id, array $data)
+    {
+        return (bool) DB::update('surveys')
+            ->set(array(
+                'starts_at'  => $data['starts_at'] !== '' ? $data['starts_at'] : NULL,
+                'ends_at'    => $data['ends_at'] !== '' ? $data['ends_at'] : NULL,
+                'updated_at' => date('Y-m-d H:i:s'),
+            ))
+            ->where('id', '=', (int) $id)
+            ->execute();
+    }
 
     /**
      * Get survey questions.

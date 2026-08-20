@@ -125,6 +125,19 @@
                                         class="glyphicon glyphicon-eye-open"
                                     ></span>
                                 </a>
+                                <a href="<?php
+                                    echo URL::site(
+                                        'survey/edit/'
+                                        . (int) $survey['id']
+                                    );
+                                    ?>"
+                                    class="btn btn-xs btn-default"
+                                    title="Edit Survey"
+                                >
+                                    <span
+                                        class="glyphicon glyphicon-pencil"
+                                    ></span>
+                                </a>
                                 <a
                                     href="<?php
                                     echo URL::site(
@@ -133,7 +146,7 @@
                                     );
                                     ?>"
                                     class="btn btn-xs btn-default"
-                                    title="Schedule Survey"
+                                    title="Manage Schedule"
                                 >
                                     <span
                                         class="glyphicon glyphicon-calendar"
