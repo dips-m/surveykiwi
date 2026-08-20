@@ -1,7 +1,17 @@
 <?php defined('SYSPATH') OR die('No direct script access.');
 
+/**
+ * Handles user authentication: login, logout, and
+ * guarding all other actions behind an auth check.
+ */
 class Controller_Auth extends Controller
 {
+    /**
+     * Runs before every action in this controller.
+     * Enforces that the user is logged in, except for
+     * the login action itself (which must be reachable
+     * by anonymous/unauthenticated visitors).
+     */
     public function before()
     {
         parent::before();
@@ -21,6 +31,10 @@ class Controller_Auth extends Controller
         }
     }
 
+    /**
+     * Displays the login form (GET) and processes
+     * login attempts (POST).
+     */
     public function action_login()
     {
         $auth = new Service_Auth;
@@ -70,6 +84,10 @@ class Controller_Auth extends Controller
         $this->response->body($view);
     }
 
+    /**
+     * Logs the current user out and redirects to the
+     * login page.
+     */
     public function action_logout()
     {
         $auth = new Service_Auth;
