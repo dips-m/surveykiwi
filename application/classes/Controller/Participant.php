@@ -57,14 +57,14 @@ class Controller_Participant extends Controller
                 return;
             }
 
-            $participant_id = $participant_model->create(
+            $participant = $participant_model->create(
                 $survey_id,
                 $first_name,
                 $last_name,
                 $email
             );
 
-            $this->_json_response('success','Participant added successfully.');
+            $this->_json_response($participant['success'], $participant['message']);
             return;
         }
         catch (Exception $e)

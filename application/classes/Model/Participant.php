@@ -222,7 +222,7 @@ class Model_Participant
 
         if ($survey_id <= 0)
         {
-            throw new Exception('Invalid survey.');
+            return array('success' => FALSE, 'message' => 'Invalid survey.');
         }
 
         $first_name = trim($first_name);
@@ -231,17 +231,17 @@ class Model_Participant
 
         if ($first_name === '')
         {
-            throw new Exception('First name is required.');
+            return array('success' => FALSE, 'message' => 'First name is required.');
         }
 
         if ($last_name === '')
         {
-            throw new Exception('Last name is required.');
+            return array('success' => FALSE, 'message' => 'Last name is required.');
         }
 
         if (!filter_var($email, FILTER_VALIDATE_EMAIL))
         {
-            throw new Exception('Please enter a valid email address.');
+            return array('success' => FALSE, 'message' => 'Please enter a valid email address.');
         }
 
         list($participant_id, $rows) = DB::insert(
@@ -265,7 +265,7 @@ class Model_Participant
             ))
             ->execute();
 
-        return $participant_id;
+        return array('success' => True, 'message' => 'Participant added successfully.');
     }
 
     /**
