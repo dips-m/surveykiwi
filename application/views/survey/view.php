@@ -27,20 +27,6 @@
                 <strong class="pull-left">
                     Survey Details
                 </strong>
-
-                <a
-                    href="<?php
-                    echo URL::site(
-                        'schedule/'
-                        . (int) $survey['id']
-                    );
-                    ?>"
-                    class="btn btn-default btn-sm pull-right"
-                >
-                    <span class="glyphicon glyphicon-calendar"></span>
-                    View Schedule
-                </a>
-
             </div>
             <div class="panel-body">
                 <p>

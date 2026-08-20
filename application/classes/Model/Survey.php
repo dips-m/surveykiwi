@@ -3,10 +3,33 @@
 
 class Model_Survey
 {
+
+    /**
+     * Survey status
+     */
+    const STATUS_DRAFT     = 'draft';
+    const STATUS_PUBLISHED = 'published';
+    const STATUS_CLOSED    = 'closed';
+
     /**
      * Number of surveys displayed per page.
      */
     const ITEMS_PER_PAGE = 10;
+
+    /**
+     * Allowed values for the status field. Kept in one place so
+     * the controller, model, and validation rule can't drift.
+     *
+     * @return array
+     */
+    public static function statuses()
+    {
+        return array(
+            self::STATUS_DRAFT,
+            self::STATUS_PUBLISHED,
+            self::STATUS_CLOSED,
+        );
+    }
 
     /**
      * Get surveys for dashboard.
@@ -204,6 +227,178 @@ class Model_Survey
             ->current();
     }
 
+    /**
+     * Default field set for a brand new, unsaved survey (used by the
+     * "create" form).
+     */
+    public static function blank()
+    {
+        return array(
+            'id'          => NULL,
+            'title'       => '',
+            'description' => '',
+            'status'      => self::STATUS_DRAFT,
+            'starts_at'   => '',
+            'ends_at'     => '',
+        );
+    }
+ 
+    /**
+     * @return array|FALSE
+     */
+    public static function find($id)
+    {
+        $row = DB::select('*')
+            ->from('surveys')
+            ->where('id', '=', (int) $id)
+            ->limit(1)
+            ->execute()
+            ->current();
+ 
+        return $row ? $row : FALSE;
+    }
+ 
+    /**
+     * Check whether a survey with the given ID exists.
+     *
+     * @param integer $id
+     *
+     * @return boolean
+     */
+    public static function exists($id)
+    {
+        $count = DB::select(array(DB::expr('COUNT(*)'), 'total'))
+            ->from('surveys')
+            ->where('id', '=', (int) $id)
+            ->execute()
+            ->get('total');
+ 
+        return (int) $count > 0;
+    }
+ 
+    /**
+     * @return int newly created survey id
+     */
+    public static function create(array $data)
+    {
+        $now = date('Y-m-d H:i:s');
+ 
+        list($id) = DB::insert('surveys', array(
+                'title', 'description', 'status', 'created_at', 'updated_at',
+            ))
+            ->values(array(
+                $data['title'],
+                $data['description'],
+                $data['status'],
+                $now,
+                $now,
+            ))
+            ->execute();
+ 
+        return (int) $id;
+    }
+
+     /**
+     * Update a survey's title, description, and status.
+     *
+     * @param integer $id
+     * @param array   $data Expects 'title', 'description', 'status'.
+     *
+     * @return boolean TRUE on success.
+     */
+    public static function save_details($id, array $data)
+    {
+        DB::update('surveys')
+            ->set(array(
+                'title'       => $data['title'],
+                'description' => $data['description'],
+                'status'      => $data['status'],
+                'updated_at'  => date('Y-m-d H:i:s'),
+            ))
+            ->where('id', '=', (int) $id)
+            ->execute();
+
+        return TRUE;
+    }
+
+    /**
+     * Get a survey by ID, but only if it is currently published.
+     * Used to gate access for anything that should only operate on
+     * a live survey (e.g. the public-facing response form).
+     *
+     * @param integer $survey_id
+     *
+     * @return array|null
+     */
+    public function get_published_survey($survey_id)
+    {
+        return DB::select()
+            ->from('surveys')
+            ->where('id', '=', $survey_id)
+            ->where('status', '=', 'published')
+            ->execute()
+            ->current();
+    }
+
+     /**
+     * Get all questions belonging to a survey, in display order.
+     *
+     * @param integer $survey_id
+     *
+     * @return array
+     */
+    public function get_survey_questions($survey_id)
+    {
+        return DB::select()
+            ->from('survey_questions')
+            ->where('survey_id', '=', $survey_id)
+            ->order_by('sort_order', 'ASC')
+            ->execute()
+            ->as_array();
+    }
+    
+    /**
+     * Update a survey's title, description, and status.
+     *
+     * @param integer $id
+     * @param array   $data Expects 'title', 'description', 'status'.
+     *
+     * @return boolean TRUE on success.
+     */
+    public static function update($id, array $data)
+    {
+        return (bool) DB::update('surveys')
+            ->set(array(
+                'title'       => $data['title'],
+                'description' => $data['description'],
+                'status'      => $data['status'],
+                'updated_at'  => date('Y-m-d H:i:s'),
+            ))
+            ->where('id', '=', (int) $id)
+            ->execute();
+    }
+    
+     /**
+     * Save the start/end window for a survey. Empty strings are
+     * normalized to NULL so an open-ended start or end date is
+     * stored consistently.
+     *
+     * @param integer $id
+     * @param array   $data Expects 'starts_at', 'ends_at'.
+     *
+     * @return boolean TRUE on success.
+     */
+    public static function save_schedule($id, array $data)
+    {
+        return (bool) DB::update('surveys')
+            ->set(array(
+                'starts_at'  => $data['starts_at'] !== '' ? $data['starts_at'] : NULL,
+                'ends_at'    => $data['ends_at'] !== '' ? $data['ends_at'] : NULL,
+                'updated_at' => date('Y-m-d H:i:s'),
+            ))
+            ->where('id', '=', (int) $id)
+            ->execute();
+    }
 
     /**
      * Get survey questions.
@@ -472,6 +667,16 @@ class Model_Survey
         ->execute();
     }
 
+    /**
+     * Update the status of an existing invitation for a given
+     * schedule entry / participant pair.
+     *
+     * @param integer $schedule_entry_id
+     * @param integer $participant_id
+     * @param string  $status
+     *
+     * @return integer Number of affected rows.
+     */
     public function update_invitation_status($schedule_entry_id, $participant_id, $status)
     {
         return DB::update('survey_invitations')
@@ -497,6 +702,18 @@ class Model_Survey
             ->execute();
     }
 
+    /**
+     * Upsert an invitation record: updates the existing invitation
+     * for this schedule entry / participant pair if one exists,
+     * otherwise creates a new one.
+     *
+     * @param integer $schedule_entry_id
+     * @param integer $participant_id
+     * @param string  $status
+     *
+     * @return mixed Result of update_invitation_status() or
+     *               create_invitation(), depending on which ran.
+     */
     public function save_invitation($schedule_entry_id, $participant_id, $status)
     {
         $existing = DB::select(

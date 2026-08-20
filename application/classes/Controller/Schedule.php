@@ -6,36 +6,6 @@ class Controller_Schedule extends Controller_Template
     public $template = 'layout/master';
 
 
-    public function action_index()
-    {
-        $id = (int) $this->request->param('id');
-
-        $survey = $this->_get_survey_or_404($id);
-
-        $schedule_model = Model::factory('Schedule');
-        $schedule = $schedule_model->get_by_survey_id($id);
-        $recurrenceRules = $schedule_model->get_recurrence_rules();
-
-        // Calculate future dates if schedule exists
-        $scheduleEntries = array();
-
-        if ($schedule)
-        {
-            $scheduleEntries = $schedule_model->get_entries_by_schedule_id($schedule['id']);
-        }
-
-        $participant_model = Model::factory('Participant');
-        $participants = $participant_model->get_by_survey($id);
-
-        $this->template->content = View::factory('survey/schedule')
-            ->set('survey', $survey)
-            ->set('schedule', $schedule)
-            ->set('recurrenceRules', $recurrenceRules)
-            ->set('scheduleDates', $scheduleEntries)
-            ->set('participants', $participants);
-    }
-
-
     /**
      * Handle main schedule form saving.
      * Import is intentionally handled only from this save action.
@@ -53,7 +23,6 @@ class Controller_Schedule extends Controller_Template
 
         try
         {
-            $this->_get_survey_or_404($id);
 
             $schedule_model = Model::factory('Schedule');
 
