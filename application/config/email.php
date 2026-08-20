@@ -2,16 +2,16 @@
 
 return array(
     'smtp' => array(
-        'host' => 'sandbox.smtp.mailtrap.io',
-        'port' => 2525,
-        'username' => 'YOUR_MAILTRAP_USERNAME',
-        'password' => 'YOUR_MAILTRAP_PASSWORD',
+        'host' => 'smtp.gmail.com',
+        'port' => 587,
+        'username' => 'dpkmurtadak@gmail.com',
+        'password' => 'rtavuxuptmyxzgli',
         'encryption' => 'tls',
         'timeout' => 30,
     ),
 
     'from' => array(
-        'email' => 'no-reply@surveykiwi.test',
+        'email' => 'dpkmurtadak@gmail.com',
         'name' => 'SurveyKiwi',
     ),
 
