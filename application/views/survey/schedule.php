@@ -13,6 +13,14 @@
     $quarter_month_val = isset($old['quarter_month']) ? $old['quarter_month'] : (isset($schedule['quarter_month']) ? $schedule['quarter_month'] : '');
     $active_val = isset($old['is_active']) ? $old['is_active'] : (!isset($schedule['is_active']) || $schedule['is_active'] == 1);
     $remind_val = isset($old['reminders_enabled']) ? $old['reminders_enabled'] : (isset($schedule['reminders_enabled']) && $schedule['reminders_enabled'] == 1);
+
+    $start_date_past = !empty($start_date_val) && strtotime($start_date_val) <= strtotime(date('Y-m-d'));
+    $start_datetime_past = !empty($start_date_val) && !empty($start_time_val) && strtotime($start_date_val . ' ' . $start_time_val) < time();
+
+    $disabled_freq = $start_date_past ? 'disabled' : '';
+    $disabled_start_date = $start_date_past ? 'disabled' : '';
+    $disabled_start_time = $start_datetime_past ? 'disabled' : '';
+
 ?>
 
 <div class="sk-page-header">
@@ -54,7 +62,7 @@
                     <div class="row" style="display: flex; flex-wrap: wrap; align-items: flex-start;">
                         <div id="group-frequency" class="col-md-3" style="padding-right: 10px; padding-left: 10px;">
                             <label for="frequency" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">Frequency <span class="text-danger">*</span></label>
-                            <select name="frequency" id="frequency" class="form-control" style="border-radius: 6px;">
+                            <select name="frequency" id="frequency" class="form-control" style="border-radius: 6px;" <?php echo $disabled_freq ?> >
                                 <option value="">Select</option>
                                 <option value="once" <?php echo ($freq_val === 'once') ? 'selected' : ''; ?>>Once</option>
                                 <option value="daily" <?php echo ($freq_val === 'daily') ? 'selected' : ''; ?>>Daily</option>

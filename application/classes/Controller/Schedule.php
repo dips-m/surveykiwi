@@ -91,6 +91,7 @@ class Controller_Schedule extends Controller_Template
                 $schedule_id,
                 $this->request->post()
             );
+
             if (!$result['success'])
             {
                 return $this->_json_response($result['success'] ,$result['message']);

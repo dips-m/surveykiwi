@@ -2,6 +2,15 @@
 
 class Model_Schedule
 {
+    protected $recurrence_rules;
+    protected $recurrence_rule_map;
+
+    public function __construct()
+    {
+        $this->recurrence_rules = Kohana::$config->load('schedule')->get('recurrence_rules');
+        $this->recurrence_rule_map = array_column($this->recurrence_rules, 'rule_key', 'id');
+    }
+
     /**
     * Get the active/latest schedule for a survey.
     * @param integer $survey_id
@@ -32,7 +41,6 @@ class Model_Schedule
             ->as_array();
     }
 
-
     /**
      * Get generated schedule entries for a schedule.
      */
@@ -46,6 +54,15 @@ class Model_Schedule
             ->as_array();
     }
 
+    /**
+     * Get recurrence rule key from configured recurrence rule ID.
+     */
+    protected function get_recurrence_rule_key($rule_id)
+    {
+        return isset($this->recurrence_rule_map[$rule_id])
+            ? $this->recurrence_rule_map[$rule_id]
+            : NULL;
+    }
 
     /**
      * Validate schedule save data.
@@ -167,68 +184,58 @@ class Model_Schedule
         *
         * Weekly does NOT use recurrence_rule_id.
         */
-        if ($frequency === 'once')
-        {
-            $recurrence_rule_id = NULL;
-            $weekday = NULL;
-            $month_day = NULL;
-            $quarter_month = NULL;
-        }
-        elseif ($frequency === 'daily')
-        {
-            $weekday = NULL;
-            $month_day = NULL;
-            $quarter_month = NULL;
-        }
-        elseif ($frequency === 'weekly')
-        {
-            $recurrence_rule_id = NULL;
-            $month_day = NULL;
-            $quarter_month = NULL;
+        $rule_key = $this->get_recurrence_rule_key($recurrence_rule_id);
 
-            if ($weekday < 1 || $weekday > 7)
-            {
-                return array('valid' => FALSE, 'message' => 'Please select a valid weekday.');
-            }
-        }
-        elseif ($frequency === 'monthly')
+        switch ($frequency)
         {
-            $weekday = NULL;
-            $quarter_month = NULL;
+            case 'once':
+                break;
 
-            if ($recurrence_rule_id === 3)
-            {
-                if ($month_day < 1 || $month_day > 30)
+            case 'daily':
+                if (!$rule_key)
+                {
+                    return array('valid' => FALSE, 'message' => 'Please select a valid recurrence option.');
+                }
+                break;
+
+            case 'weekly':
+                if ($weekday < 1 || $weekday > 7)
+                {
+                    return array('valid' => FALSE, 'message' => 'Please select a valid weekday.');
+                }
+                break;
+
+            case 'monthly':
+                if (!$rule_key)
+                {
+                    return array('valid' => FALSE, 'message' => 'Please select a valid recurrence option.');
+                }
+
+                if ($rule_key === 'month_same_day' && ($month_day < 1 || $month_day > 30))
                 {
                     return array('valid' => FALSE, 'message' => 'Please select a valid day.');
                 }
-            }
-            else
-            {
-                $month_day = NULL;
-            }
-        }
-        elseif ($frequency === 'quarterly')
-        {
-            $weekday = NULL;
+                break;
 
-            if ($recurrence_rule_id === 5)
-            {
-                if ($month_day < 1 || $month_day > 30)
+            case 'quarterly':
+                if (!$rule_key)
                 {
-                    return array('valid' => FALSE, 'message' => 'Please select a valid day.');
+                    return array('valid' => FALSE, 'message' => 'Please select a valid recurrence option.');
                 }
 
-                if ($quarter_month < 1 || $quarter_month > 3)
+                if ($rule_key === 'quarter_same_day')
                 {
-                    return array('valid' => FALSE, 'message' => 'Please select a valid quarter month.');
+                    if ($month_day < 1 || $month_day > 30)
+                    {
+                        return array('valid' => FALSE, 'message' => 'Please select a valid day.');
+                    }
+
+                    if ($quarter_month < 1 || $quarter_month > 3)
+                    {
+                        return array('valid' => FALSE, 'message' => 'Please select a valid quarter month.');
+                    }
                 }
-            }
-            else
-            {
-                $month_day = NULL;
-                $quarter_month = NULL;
-            }
+                break;
         }
 
         $participant_model = Model::factory('Participant');
@@ -296,36 +303,43 @@ class Model_Schedule
         /*
          * Normalize recurrence fields before saving.
          */
-        if ($frequency === 'once')
-        {
-            $recurrence_rule_id = NULL;
-            $weekday = NULL;
-            $month_day = NULL;
-            $quarter_month = NULL;
-        }
-        elseif ($frequency === 'daily')
-        {
-            $weekday = NULL;
-            $month_day = NULL;
-            $quarter_month = NULL;
-        }
-        elseif ($frequency === 'weekly')
-        {
-            $recurrence_rule_id = NULL;
-            $month_day = NULL;
-            $quarter_month = NULL;
-        }
-        elseif ($frequency === 'monthly')
-        {
-            $weekday = NULL;
-            $quarter_month = NULL;
+        $rule_key = $this->get_recurrence_rule_key($recurrence_rule_id);
 
-            if ($recurrence_rule_id === 4)
-            {
-                $month_day = NULL;
-            }
+        switch ($frequency)
+        {
+            case 'once':
+                $recurrence_rule_id = NULL;
+                $weekday = $month_day = $quarter_month = NULL;
+                break;
+
+            case 'daily':
+                $weekday = $month_day = $quarter_month = NULL;
+                break;
+
+            case 'weekly':
+                $recurrence_rule_id = NULL;
+                $month_day = $quarter_month = NULL;
+                break;
+
+            case 'monthly':
+                $weekday = $quarter_month = NULL;
+
+                if ($rule_key === 'month_last_day')
+                {
+                    $month_day = NULL;
+                }
+                break;
+
+            case 'quarterly':
+                $weekday = NULL;
+
+                if ($rule_key === 'quarter_last_day')
+                {
+                    $month_day = $quarter_month = NULL;
+                }
+                break;
         }
-        
+
         $reminders_enabled = isset($post['reminders_enabled']) ? 1 : 0;
         $is_active = isset($post['is_active']) ? 1 : 0;
         $now = date('Y-m-d H:i:s');
@@ -424,8 +438,12 @@ class Model_Schedule
                     ->execute();
             }
 
-            return $schedule_id;
-        
+            DB::query(NULL, 'COMMIT')->execute();
+
+            return array(
+                'success' => TRUE,
+                'message' => 'Schedule saved successfully.'
+            );
         }
         catch (Exception $e)
         {
@@ -463,6 +481,7 @@ class Model_Schedule
 
         $start_time_value = date('H:i:s', strtotime($start_time));
         $end_time_value = date('H:i:s', strtotime($end_time));
+        $rule_key = $this->get_recurrence_rule_key($recurrence_rule_id);
 
         /*
         * ONCE
@@ -487,20 +506,12 @@ class Model_Schedule
 
             while ($current_date <= $end_date_timestamp && count($entries) < 1000)
             {
-                $valid = FALSE;
+                $valid = $rule_key === 'every_day';
 
-                if ((int) $recurrence_rule_id === 1)
-                {
-                    $valid = TRUE;
-                }
-                elseif ((int) $recurrence_rule_id === 2)
+                if ($rule_key === 'weekdays')
                 {
                     $day_of_week = (int) date('N', $current_date);
-
-                    if ($day_of_week >= 1 && $day_of_week <= 5)
-                    {
-                        $valid = TRUE;
-                    }
+                    $valid = $day_of_week >= 1 && $day_of_week <= 5;
                 }
 
                 if ($valid)
@@ -571,35 +582,23 @@ class Model_Schedule
                 $year = (int) date('Y', $current_date);
                 $month = (int) date('n', $current_date);
                 $days_in_month = (int) date('t', $current_date);
-
                 $occurrence_date = NULL;
 
                 /*
                 * Rule 3 = Same day of month
                 */
-                if ((int) $recurrence_rule_id === 3)
+                if ($rule_key === 'month_same_day')
                 {
                     $day = min((int) $month_day, $days_in_month);
-
-                    $occurrence_date = sprintf(
-                        '%04d-%02d-%02d',
-                        $year,
-                        $month,
-                        $day
-                    );
+                    $occurrence_date = sprintf('%04d-%02d-%02d', $year, $month, $day);
                 }
 
                 /*
                 * Rule 4 = Last day of month
                 */
-                elseif ((int) $recurrence_rule_id === 4)
+                elseif ($rule_key === 'month_last_day')
                 {
-                    $occurrence_date = sprintf(
-                        '%04d-%02d-%02d',
-                        $year,
-                        $month,
-                        $days_in_month
-                    );
+                    $occurrence_date = sprintf('%04d-%02d-%02d', $year, $month, $days_in_month);
                 }
 
                 if ($occurrence_date !== NULL)
@@ -637,21 +636,18 @@ class Model_Schedule
             */
             $quarter_start_month = (int) (floor(($start_month - 1) / 3) * 3 + 1);
 
-            $current_date = strtotime(
-                sprintf('%04d-%02d-01', $start_year, $quarter_start_month)
-            );
+            $current_date = strtotime(sprintf('%04d-%02d-01', $start_year, $quarter_start_month));
 
             while ($current_date <= $end_date_timestamp && count($entries) < 1000)
             {
                 $year = (int) date('Y', $current_date);
                 $quarter_start_month = (int) date('n', $current_date);
-
                 $occurrence_date = NULL;
 
                 /*
                 * Rule 5 = Same day of quarter
                 */
-                if ((int) $recurrence_rule_id === 5)
+                if ($rule_key === 'quarter_same_day')
                 {
                     /*
                     * 1 = Jan/Apr/Jul/Oct
@@ -662,41 +658,24 @@ class Model_Schedule
 
                     if ($target_month >= 1 && $target_month <= 12)
                     {
-                        $target_month_timestamp = strtotime(
-                            sprintf('%04d-%02d-01', $year, $target_month)
-                        );
-
+                        $target_month_timestamp = strtotime(sprintf('%04d-%02d-01', $year, $target_month));
                         $days_in_month = (int) date('t', $target_month_timestamp);
                         $day = min((int) $month_day, $days_in_month);
 
-                        $occurrence_date = sprintf(
-                            '%04d-%02d-%02d',
-                            $year,
-                            $target_month,
-                            $day
-                        );
+                        $occurrence_date = sprintf('%04d-%02d-%02d', $year, $target_month, $day);
                     }
                 }
 
                 /*
                 * Rule 6 = Last day of quarter
                 */
-                elseif ((int) $recurrence_rule_id === 6)
+                elseif ($rule_key === 'quarter_last_day')
                 {
                     $quarter_end_month = $quarter_start_month + 2;
-
-                    $quarter_end_timestamp = strtotime(
-                        sprintf('%04d-%02d-01', $year, $quarter_end_month)
-                    );
-
+                    $quarter_end_timestamp = strtotime(sprintf('%04d-%02d-01', $year, $quarter_end_month));
                     $days_in_month = (int) date('t', $quarter_end_timestamp);
 
-                    $occurrence_date = sprintf(
-                        '%04d-%02d-%02d',
-                        $year,
-                        $quarter_end_month,
-                        $days_in_month
-                    );
+                    $occurrence_date = sprintf('%04d-%02d-%02d', $year, $quarter_end_month, $days_in_month);
                 }
 
                 if ($occurrence_date !== NULL)
