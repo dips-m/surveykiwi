@@ -118,7 +118,7 @@
                             </button>
 
                             <div class="section-footer">
-                                <button type="submit" class="btn btn-primary btn-sm">
+                                <button type="submit" class="btn btn-primary btn-sm" style="background-color: #2e5490; border-color: #2e5490; padding: 8px 24px; font-weight: 500; border-radius: 6px;">
                                     <?php echo $is_edit ? 'Save Survey' : 'Create Survey'; ?>
                                 </button>
                                 <span class="text-muted small" data-role="saving-indicator" style="display:none;">Saving&hellip;</span>
@@ -165,9 +165,6 @@
 
         <div class="panel panel-default" style="border-radius: 8px; border-color: #e2e8f0;">
             <div class="panel-body" style="padding: 25px 20px;">
-                <p class="text-muted" style="margin-bottom: 20px;">Survey: <strong><?php echo HTML::chars($survey['title']); ?></strong></p>
-                <hr />
-
                 <form id="scheduleForm" action="<?php echo URL::site('schedule/save/' . $survey['id']); ?>" method="POST" enctype="multipart/form-data" novalidate>
                     <input type="hidden" id="schedule_id" name="schedule_id" value="<?php echo !empty($schedule['id']) ? (int) $schedule['id'] : 0; ?>">
 
@@ -335,13 +332,11 @@
                     <div class="row" style="display: flex; flex-wrap: wrap; align-items: flex-start; margin-top: 15px;">
                         <div class="col-md-12 text-right" style="padding-top: 28px;">
                             <button type="submit" id="submit-schedule-btn" class="btn btn-primary" style="background-color: #2e5490; border-color: #2e5490; padding: 8px 24px; font-weight: 500; border-radius: 6px;">
-                                <i class="glyphicon glyphicon-floppy-disk"></i> Save Schedule
+                                Save Schedule
                             </button>
                         </div>
                     </div>
                 </form>
-
-                <hr style="margin-top: 30px; margin-bottom: 20px;">
             </div>
         </div>
     </div>
