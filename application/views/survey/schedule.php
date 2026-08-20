@@ -1,15 +1,19 @@
-<?php defined('SYSPATH') or die('No direct script access.'); 
+<?php defined('SYSPATH') or die('No direct script access.');
     $errors = Session::instance()->get_once('form_errors', array());
     $old = Session::instance()->get_once('form_data', array());
 
     $freq_val = isset($old['frequency']) ? $old['frequency'] : (isset($schedule['frequency']) ? $schedule['frequency'] : '');
-    $start_val = isset($old['start_date']) ? $old['start_date'] : (isset($schedule['start_date']) ? date('Y-m-d\TH:i', strtotime($schedule['start_date'])) : '');
-    $end_val = isset($old['end_date']) ? $old['end_date'] : (isset($schedule['end_date']) ? date('Y-m-d\TH:i', strtotime($schedule['end_date'])) : '');
+    $start_date_val = isset($old['start_date']) ? $old['start_date'] : (isset($schedule['start_date']) ? date('Y-m-d', strtotime($schedule['start_date'])) : '');
+    $end_date_val = isset($old['end_date']) ? $old['end_date'] : (isset($schedule['end_date']) ? date('Y-m-d', strtotime($schedule['end_date'])) : '');
+    $start_time_val = isset($old['start_time']) ? $old['start_time'] : (isset($schedule['start_time']) ? date('H:i', strtotime($schedule['start_time'])) : '');
+    $end_time_val = isset($old['end_time']) ? $old['end_time'] : (isset($schedule['end_time']) ? date('H:i', strtotime($schedule['end_time'])) : '');
+    $recurrence_rule_val = isset($old['recurrence_rule_id']) ? $old['recurrence_rule_id'] : (isset($schedule['recurrence_rule_id']) ? $schedule['recurrence_rule_id'] : '');
+    $weekday_val = isset($old['weekday']) ? $old['weekday'] : (isset($schedule['weekday']) ? $schedule['weekday'] : '');
+    $month_day_val = isset($old['month_day']) ? $old['month_day'] : (isset($schedule['month_day']) ? $schedule['month_day'] : '');
+    $quarter_month_val = isset($old['quarter_month']) ? $old['quarter_month'] : (isset($schedule['quarter_month']) ? $schedule['quarter_month'] : '');
     $active_val = isset($old['is_active']) ? $old['is_active'] : (!isset($schedule['is_active']) || $schedule['is_active'] == 1);
     $remind_val = isset($old['reminders_enabled']) ? $old['reminders_enabled'] : (isset($schedule['reminders_enabled']) && $schedule['reminders_enabled'] == 1);
-
 ?>
-
 
 <div class="sk-page-header">
     <div class="row">
@@ -22,8 +26,6 @@
 
 <div class="row">
     <div class="col-md-12">
-
-        <!-- Flash Error / Success Messages -->
         <?php if ($success = Session::instance()->get_once('flash_success')): ?>
             <div class="alert alert-success alert-dismissible">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -40,257 +42,177 @@
 
         <div id="alert-container"></div>
 
-        <!-- PANEL 1: Schedule Configuration & Participants Form -->
         <div class="panel panel-default" style="border-radius: 8px; border-color: #e2e8f0;">
             <div class="panel-body" style="padding: 25px 20px;">
                 <p class="text-muted" style="margin-bottom: 20px;">Survey: <strong><?php echo HTML::chars($survey['title']); ?></strong></p>
-                <hr/>
+                <hr />
 
-                <!-- Direct Non-AJAX Schedule Form -->
                 <form id="scheduleForm" action="<?php echo URL::site('schedule/save/' . $survey['id']); ?>" method="POST" enctype="multipart/form-data" novalidate>
-                    <div class="row" style="display: flex; flex-wrap: wrap; align-items: flex-start;">
                     <input type="hidden" id="schedule_id" name="schedule_id" value="<?php echo !empty($schedule['id']) ? (int) $schedule['id'] : 0; ?>">
-                        <!-- Frequency Selection -->
-                        <div id="group-frequency" class="col-md-4" style="padding-right: 10px; padding-left: 10px;">
+
+                    <!-- Schedule Configuration -->
+                    <div class="row" style="display: flex; flex-wrap: wrap; align-items: flex-start;">
+                        <div id="group-frequency" class="col-md-3" style="padding-right: 10px; padding-left: 10px;">
                             <label for="frequency" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">Frequency <span class="text-danger">*</span></label>
                             <select name="frequency" id="frequency" class="form-control" style="border-radius: 6px;">
                                 <option value="">Select</option>
-                                <option value="once" <?php echo ($freq_val === 'once') ? 'selected' : ''; ?>>Once (Non-recurring)</option>
+                                <option value="once" <?php echo ($freq_val === 'once') ? 'selected' : ''; ?>>Once</option>
                                 <option value="daily" <?php echo ($freq_val === 'daily') ? 'selected' : ''; ?>>Daily</option>
                                 <option value="weekly" <?php echo ($freq_val === 'weekly') ? 'selected' : ''; ?>>Weekly</option>
                                 <option value="monthly" <?php echo ($freq_val === 'monthly') ? 'selected' : ''; ?>>Monthly</option>
                                 <option value="quarterly" <?php echo ($freq_val === 'quarterly') ? 'selected' : ''; ?>>Quarterly</option>
                             </select>
-                            <span id="err-frequency" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; display: none; width: 100%;"></span>
+                            <span id="err-frequency" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; display: none;"></span>
                         </div>
 
-                        <!-- Start Date Configuration -->
-                        <div id="group-start-date" class="col-md-4" style="padding-right: 10px; padding-left: 10px;">
-                            <label for="start_date" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">Start date <span class="text-danger">*</span></label>
-                            <input type="text" name="start_date" id="start_date" class="form-control" style="border-radius: 6px;" 
-                                value="<?php echo HTML::chars($start_val); ?>" placeholder="Select Date">
-                            <span id="err-start-date" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; display: none; width: 100%;"></span>
+                        <div id="group-recurrence-rule" class="col-md-3" style="padding-right: 10px; padding-left: 10px; display: none;">
+                            <label for="recurrence_rule_id" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">Recurrence <span class="text-danger">*</span></label>
+                            <select name="recurrence_rule_id" id="recurrence_rule_id" class="form-control" style="border-radius: 6px;"></select>
+                            <span id="err-recurrence-rule" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; display: none;"></span>
                         </div>
 
-                        <!-- End Date Configuration -->
-                        <div id="group-end-date" class="col-md-4" style="padding-right: 10px; padding-left: 10px;">
-                            <label for="end_date" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">End date <span class="text-danger">*</span></label>
-                            <input type="text" name="end_date" id="end_date" class="form-control" style="border-radius: 6px;" 
-                                value="<?php echo HTML::chars($end_val); ?>" placeholder="Select Date">
-                            <span id="err-end-date" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; display: none; width: 100%;"></span>
+                        <div id="group-weekday" class="col-md-3" style="padding-right: 10px; padding-left: 10px; display: none;">
+                            <label for="weekday" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">Weekday <span class="text-danger">*</span></label>
+                            <select name="weekday" id="weekday" class="form-control" style="border-radius: 6px;">
+                                <option value="">Select weekday</option>
+                                <option value="1" <?php echo ((string) $weekday_val === '1') ? 'selected' : ''; ?>>Monday</option>
+                                <option value="2" <?php echo ((string) $weekday_val === '2') ? 'selected' : ''; ?>>Tuesday</option>
+                                <option value="3" <?php echo ((string) $weekday_val === '3') ? 'selected' : ''; ?>>Wednesday</option>
+                                <option value="4" <?php echo ((string) $weekday_val === '4') ? 'selected' : ''; ?>>Thursday</option>
+                                <option value="5" <?php echo ((string) $weekday_val === '5') ? 'selected' : ''; ?>>Friday</option>
+                                <option value="6" <?php echo ((string) $weekday_val === '6') ? 'selected' : ''; ?>>Saturday</option>
+                                <option value="7" <?php echo ((string) $weekday_val === '7') ? 'selected' : ''; ?>>Sunday</option>
+                            </select>
+                            <span id="err-weekday" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; display: none;"></span>
                         </div>
 
+                        <div id="group-quarter-month" class="col-md-3" style="padding-right: 10px; padding-left: 10px; display: none;">
+                            <label for="quarter_month" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">Quarter Month <span class="text-danger">*</span></label>
+                            <select name="quarter_month" id="quarter_month" class="form-control" style="border-radius: 6px;">
+                                <option value="">Select month</option>
+                                <option value="1" <?php echo ((string) $quarter_month_val === '1') ? 'selected' : ''; ?>>January, April, July, October (Month 1)</option>
+                                <option value="2" <?php echo ((string) $quarter_month_val === '2') ? 'selected' : ''; ?>>February, May, August, November (Month 2)</option>
+                                <option value="3" <?php echo ((string) $quarter_month_val === '3') ? 'selected' : ''; ?>>March, June, September, December (Month 3)</option>
+                            </select>
+                            <span id="err-quarter-month" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; display: none;"></span>
+                        </div>
+
+                        <div id="group-month-day" class="col-md-3" style="padding-right: 10px; padding-left: 10px; display: none;">
+                            <label for="month_day" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">Month Day <span class="text-danger">*</span></label>
+                            <select name="month_day" id="month_day" class="form-control" style="border-radius: 6px;">
+                                <option value="">Select day</option>
+                                <?php for ($day = 1; $day <= 30; $day++): ?>
+                                    <option value="<?php echo $day; ?>" <?php echo ((string) $month_day_val === (string) $day) ? 'selected' : ''; ?>><?php echo $day; ?></option>
+                                <?php endfor; ?>
+                            </select>
+                            <span id="err-month-day" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; display: none;"></span>
+                        </div>
+
+
+                    </div>
+
+                    <!-- Start / End Date & Time -->
+                    <div class="row" style="display: flex; flex-wrap: wrap; align-items: flex-start; margin-top: 15px;">
+                        <div id="group-start-date" class="col-md-3" style="padding-right: 10px; padding-left: 10px;">
+                            <label for="start_date" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">Start Date <span class="text-danger">*</span></label>
+                            <input type="text" name="start_date" id="start_date" class="form-control" value="<?php echo HTML::chars($start_date_val); ?>" placeholder="Select Date" style="border-radius: 6px;">
+                            <span id="err-start-date" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; display: none;"></span>
+                        </div>
+
+                        <div id="group-end-date" class="col-md-3" style="padding-right: 10px; padding-left: 10px;">
+                            <label for="end_date" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">End Date <span class="text-danger">*</span></label>
+                            <input type="text" name="end_date" id="end_date" class="form-control" value="<?php echo HTML::chars($end_date_val); ?>" placeholder="Select Date" style="border-radius: 6px;">
+                            <span id="err-end-date" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; display: none;"></span>
+                        </div>
+
+                        <div id="group-start-time" class="col-md-3" style="padding-right: 10px; padding-left: 10px;">
+                            <label for="start_time" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">Start Time <span class="text-danger">*</span></label>
+                            <input type="text" name="start_time" id="start_time" class="form-control" value="<?php echo HTML::chars($start_time_val); ?>" placeholder="Select Time" style="border-radius: 6px;">
+                            <span id="err-start-time" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; display: none;"></span>
+                        </div>
+
+                        <div id="group-end-time" class="col-md-3" style="padding-right: 10px; padding-left: 10px;">
+                            <label for="end_time" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">End Time <span class="text-danger">*</span></label>
+                            <input type="text" name="end_time" id="end_time" class="form-control" value="<?php echo HTML::chars($end_time_val); ?>" placeholder="Select Time" style="border-radius: 6px;">
+                            <span id="err-end-time" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; display: none;"></span>
+                        </div>
                     </div>
 
                     <!-- Participants / Status / Reminders -->
-                    <div class="row"
-                        style="display: flex; flex-wrap: wrap; align-items: flex-start; margin-top: 15px;">
+                    <div class="row" style="display: flex; flex-wrap: wrap; align-items: flex-start; margin-top: 15px;">
 
-                        <!-- Participants -->
-                        <div id="group-participants-file"
-                            class="col-md-4"
-                            style="padding-right: 10px; padding-left: 10px;">
+                        <div class="col-md-3" id="group-participants-file" style="padding-right: 10px; padding-left: 10px;">
+                            <label for="participants_file" class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px;">Participants <span class="text-muted" style="font-weight: 400;">(CSV)</span></label>
 
-                            <label for="participants_file"
-                                class="control-label"
-                                style="
-                                    font-size: 13px;
-                                    font-weight: 500;
-                                    color: #475569;
-                                    margin-bottom: 6px;
-                                ">
-
-                                Participants
-                                <span class="text-muted"
-                                    style="font-weight: 400;">
-                                    (CSV)
-                                </span>
-
-                            </label>
-
-                            <div style="
-                                display: flex;
-                                align-items: center;
-                                width: 100%;
-                            ">
-
-                                <label class="btn btn-default"
-                                    style="
-                                        background-color: #ffffff;
-                                        border-color: #cbd5e1;
-                                        font-weight: 500;
-                                        color: #334155;
-                                        border-radius: 6px;
-                                        margin-bottom: 0;
-                                        cursor: pointer;
-                                        white-space: nowrap;
-                                    ">
-
+                            <div style="display: flex; align-items: center; width: 100%;">
+                                <label class="btn btn-default" style="background-color: #ffffff; border-color: #cbd5e1; font-weight: 500; color: #334155; border-radius: 6px; margin-bottom: 0; cursor: pointer; white-space: nowrap;">
                                     <i class="glyphicon glyphicon-folder-open"></i>
                                     Choose CSV
-
-                                    <input type="file"
-                                        id="participants_file"
-                                        name="participants_file"
-                                        accept=".csv"
-                                        style="display: none;"
-                                        onchange="
-                                            document.getElementById('file-chosen-name').textContent =
-                                            this.files[0] ? this.files[0].name : 'No file chosen';
-                                        ">
-
+                                    <input type="file" id="participants_file" name="participants_file" accept=".csv" style="display: none;">
                                 </label>
 
-                                <span id="file-chosen-name"
-                                    class="text-muted"
-                                    style="
-                                        font-size: 12px;
-                                        margin-left: 8px;
-                                        overflow: hidden;
-                                        text-overflow: ellipsis;
-                                        white-space: nowrap;
-                                    ">
-                                    No file chosen
-                                </span>
-
+                                <span id="file-chosen-name" class="text-muted" style="font-size: 12px; margin-left: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">No file chosen</span>
                             </div>
-                            <?php if ( !empty($participants) && count($participants) > 0): ?>
-                                <span class="text-warning"
-                                    style="font-size:12px; display:block; margin-top:6px;">
+
+                            <?php if (!empty($participants) && count($participants) > 0): ?>
+                                <span class="text-warning" style="font-size:12px; display:block; margin-top:6px;">
                                     <i class="glyphicon glyphicon-warning-sign"></i>
-                                    Note: Uploading a new CSV will delete the existing
-                                    <?php echo count($participants); ?> participants.
+                                    Note: Uploading a new CSV will delete the existing <?php echo count($participants); ?> participants.
                                 </span>
                             <?php endif; ?>
 
-                            <span id="err-participants-file"
-                                class="help-block text-danger"
-                                style="
-                                    font-size: 12px;
-                                    margin-top: 4px;
-                                    margin-bottom: 0;
-                                    display: none;
-                                ">
-                            </span>
+                            <span id="err-participants-file" class="help-block text-danger" style="font-size: 12px; margin-top: 4px; margin-bottom: 0; display: none;"></span>
+
                             <div style="margin-top: 6px;">
-                                <a href="<?= URL::base(); ?>database/sample/survey_participants-2026.csv"
-                                download
-                                style="font-size: 12px; color: #2e5490; text-decoration: none;">
-                                    <i class="glyphicon glyphicon-download-alt"
-                                    style="margin-right: 4px;"></i>
+                                <a href="<?= URL::base(); ?>database/sample/survey_participants-2026.csv" download style="font-size: 12px; color: #2e5490; text-decoration: none;">
+                                    <i class="glyphicon glyphicon-download-alt" style="margin-right: 4px;"></i>
                                     Download Sample Participant CSV
                                 </a>
                             </div>
-
                         </div>
-
 
                         <!-- Status -->
-                        <div class="col-md-4"
-                            style="
-                                padding-right: 10px;
-                                padding-left: 10px;
-                                padding-top: 5px;
-                            ">
+                        <div class="col-md-3" style="padding-right: 10px; padding-left: 10px; padding-top: 5px;">
+                            <label class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px; display: block;">Status</label>
 
-                            <label class="control-label"
-                                style="
-                                    font-size: 13px;
-                                    font-weight: 500;
-                                    color: #475569;
-                                    margin-bottom: 6px;
-                                    display: block;
-                                ">
-                                Status
-                            </label>
-
-                            <div class="checkbox form-control"
-                                style="margin-top: 0;">
-
-                                <label style="
-                                    font-weight: 500;
-                                    color: #1e293b;
-                                    font-size: 13px;
-                                ">
-
-                                    <input type="checkbox"
-                                        name="is_active"
-                                        value="1"
-                                        <?php echo $active_val ? 'checked' : ''; ?>>
-
+                            <div class="checkbox form-control" style="margin-top: 0;">
+                                <label style="font-weight: 500; color: #1e293b; font-size: 13px;">
+                                    <input type="checkbox" name="is_active" value="1" <?php echo $active_val ? 'checked' : ''; ?>>
                                     Active schedule
-
                                 </label>
-
                             </div>
-
                         </div>
-
 
                         <!-- Reminders -->
-                        <div class="col-md-4"
-                            style="
-                                padding-right: 10px;
-                                padding-left: 10px;
-                                padding-top: 5px;
-                            ">
+                        <div class="col-md-3" style="padding-right: 10px; padding-left: 10px; padding-top: 5px;">
+                            <label class="control-label" style="font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px; display: block;">Reminders</label>
 
-                            <label class="control-label"
-                                style="
-                                    font-size: 13px;
-                                    font-weight: 500;
-                                    color: #475569;
-                                    margin-bottom: 6px;
-                                    display: block;
-                                ">
-                                Reminders
-                            </label>
-
-                            <div class="checkbox form-control"
-                                style="
-                                    margin-top: 0;
-                                    margin-bottom: 6px;
-                                ">
-
-                                <label style="
-                                    font-weight: 500;
-                                    color: #1e293b;
-                                    font-size: 13px;
-                                ">
-
-                                    <input type="checkbox"
-                                        name="reminders_enabled"
-                                        value="1"
-                                        <?php echo $remind_val ? 'checked' : ''; ?>>
-
+                            <div class="checkbox form-control" style="margin-top: 0; margin-bottom: 6px;">
+                                <label style="font-weight: 500; color: #1e293b; font-size: 13px;">
+                                    <input type="checkbox" name="reminders_enabled" value="1" <?php echo $remind_val ? 'checked' : ''; ?>>
                                     Alert creator for survey
-
                                 </label>
-
                             </div>
-
                         </div>
-
                     </div>
 
+                    <!-- Submit -->
                     <div class="row" style="display: flex; flex-wrap: wrap; align-items: flex-start; margin-top: 15px;">
-                        <!-- Submit Button -->
                         <div class="col-md-12 text-right" style="padding-top: 28px;">
-                            <button type="submit" class="btn btn-primary" style="background-color: #2e5490; border-color: #2e5490; padding: 8px 24px; font-weight: 500; border-radius: 6px; ">
-                                Save Schedule
+                            <button type="submit" id="submit-schedule-btn" class="btn btn-primary" style="background-color: #2e5490; border-color: #2e5490; padding: 8px 24px; font-weight: 500; border-radius: 6px;">
+                                <i class="glyphicon glyphicon-floppy-disk"></i> Save Schedule
                             </button>
                         </div>
-
                     </div>
                 </form>
 
                 <hr style="margin-top: 30px; margin-bottom: 20px;">
             </div>
         </div>
-
     </div>
 </div>
 
+<!-- Schedule & Participant List -->
 <div class="row">
 
     <!-- =========================
@@ -299,18 +221,18 @@
     <div class="col-md-6">
 
         <div class="panel panel-default"
-             style="border-radius: 8px; border-color: #e2e8f0; box-shadow: none; height: auto; min-height: 655px;">
+            style="border-radius: 8px; border-color: #e2e8f0; box-shadow: none; height: auto; min-height: 655px;">
 
             <!-- Header -->
             <div class="panel-heading"
-                 style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-radius: 8px 8px 0 0; padding: 14px 16px;">
+                style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-radius: 8px 8px 0 0; padding: 14px 16px;">
 
                 <div style="display: flex; align-items: center; justify-content: space-between;">
 
                     <div>
                         <h4 style="margin: 0; font-size: 14px; font-weight: 600; color: #334155;">
                             <i class="glyphicon glyphicon-time"
-                               style="margin-right: 6px; color: #2e5490;"></i>
+                                style="margin-right: 6px; color: #2e5490;"></i>
                             Schedules
                         </h4>
 
@@ -339,7 +261,7 @@
 
                     <div class="table-responsive">
                         <table class="table table-hover"
-                               style="margin-bottom: 0; font-size: 13px;">
+                            style="margin-bottom: 0; font-size: 13px;">
 
                             <thead>
                                 <tr style="background: #f8fafc;">
@@ -348,6 +270,10 @@
                                     </th>
 
                                     <th style="min-width: 150px; padding: 10px 15px; color: #64748b;">
+                                        Start Date
+                                    </th>
+
+                                    <th style="min-width: 130px; padding: 10px 15px; color: #64748b;">
                                         Start Date
                                     </th>
 
@@ -384,9 +310,20 @@
                                         </td>
 
                                         <td style="padding: 11px 15px;">
+                                            <strong style="color: #334155;">
+                                                <?php
+                                                echo date(
+                                                    'l',
+                                                    strtotime($scheduleValue['start_date'])
+                                                );
+                                                ?>
+                                            </strong>
+                                        </td>
+
+                                        <td style="padding: 11px 15px;">
                                             <?php
                                             echo date(
-                                                'h:i A',
+                                                'H:i',
                                                 strtotime($scheduleValue['start_date'])
                                             );
                                             ?>
@@ -395,7 +332,7 @@
                                         <td style="padding: 11px 15px;">
                                             <?php
                                             echo date(
-                                                'h:i A',
+                                                'H:i',
                                                 strtotime($scheduleValue['end_date'])
                                             );
                                             ?>
@@ -419,7 +356,7 @@
 
                     <!-- Schedule Pagination -->
                     <div id="schedule-pagination"
-                         style="text-align: center; padding: 10px 15px; border-top: 1px solid #e2e8f0;">
+                        style="text-align: center; padding: 10px 15px; border-top: 1px solid #e2e8f0;">
                     </div>
 
                 <?php else: ?>
@@ -427,7 +364,7 @@
                     <div style="padding: 100px 20px; text-align: center;">
 
                         <i class="glyphicon glyphicon-calendar"
-                           style="font-size: 30px; color: #cbd5e1; margin-bottom: 10px;"></i>
+                            style="font-size: 30px; color: #cbd5e1; margin-bottom: 10px;"></i>
 
                         <p style="margin: 0; color: #64748b; font-size: 13px;">
                             No upcoming schedules.
@@ -447,22 +384,22 @@
 
     </div>
 
-        <!-- =========================
+    <!-- =========================
         PARTICIPANTS
     ========================== -->
     <div class="col-md-6">
         <div class="panel panel-default"
-             style="border-radius: 8px; border-color: #e2e8f0; box-shadow: none; height: auto; min-height: 655px;">
+            style="border-radius: 8px; border-color: #e2e8f0; box-shadow: none; height: auto; min-height: 655px;">
             <!-- Header -->
             <div class="panel-heading"
-                 style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-radius: 8px 8px 0 0; padding: 14px 16px;">
+                style="background: #f8fafc; border-bottom: 1px solid #e2e8f0; border-radius: 8px 8px 0 0; padding: 14px 16px;">
 
                 <div style="display: flex; align-items: center; justify-content: space-between;">
 
                     <div>
                         <h4 style="margin: 0; font-size: 14px; font-weight: 600; color: #334155;">
                             <i class="glyphicon glyphicon-user"
-                               style="margin-right: 6px; color: #2e5490;"></i>
+                                style="margin-right: 6px; color: #2e5490;"></i>
                             Participants
                         </h4>
 
@@ -479,35 +416,35 @@
             </div>
             <!-- Body -->
             <div class="panel-body" style="padding: 0;">
-                    <!-- Add Participant -->
-                    <div style="padding: 12px 10px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
+                <!-- Add Participant -->
+                <div style="padding: 12px 10px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
 
-                        <form id="add-participant-form"
-                            style="display: flex; align-items: center; gap: 8px; width: 100%;">
+                    <form id="add-participant-form"
+                        style="display: flex; align-items: center; gap: 8px; width: 100%;">
 
-                            <input type="hidden" name="survey_id" value="<?= (int) $survey['id'] ?>">
+                        <input type="hidden" name="survey_id" value="<?= (int) $survey['id'] ?>">
 
-                            <input type="text" name="first_name" id="participant-first-name" class="form-control input-field" placeholder="First Name" required
-                                style="flex: 1; min-width: 0;">
+                        <input type="text" name="first_name" id="participant-first-name" class="form-control input-field" placeholder="First Name" required
+                            style="flex: 1; min-width: 0;">
 
-                            <input type="text" name="last_name" id="participant-last-name" class="form-control input-field" placeholder="Last Name" required
-                                style="flex: 1; min-width: 0;">
+                        <input type="text" name="last_name" id="participant-last-name" class="form-control input-field" placeholder="Last Name" required
+                            style="flex: 1; min-width: 0;">
 
-                            <input type="email" name="email" id="participant-email" class="form-control input-field" placeholder="Email" required
-                                style="flex: 1.5; min-width: 0;">
+                        <input type="email" name="email" id="participant-email" class="form-control input-field" placeholder="Email" required
+                            style="flex: 1.5; min-width: 0;">
 
-                            <button type="submit" id="add-participant-btn" class="btn btn-primary btn-sm" title="Add Participant"
-                                    style="background-color: #2e5490; border-color: #2e5490; padding: 8px 20px; font-weight: 500; border-radius: 6px; flex: 0 0 auto; white-space: nowrap;">
-                                Add
-                            </button>
+                        <button type="submit" id="add-participant-btn" class="btn btn-primary btn-sm" title="Add Participant"
+                            style="background-color: #2e5490; border-color: #2e5490; padding: 8px 20px; font-weight: 500; border-radius: 6px; flex: 0 0 auto; white-space: nowrap;">
+                            Add
+                        </button>
 
-                        </form>
+                    </form>
 
-                        <div id="participant-add-message"
-                            style="margin-top: 6px; font-size: 12px;">
-                        </div>
-
+                    <div id="participant-add-message"
+                        style="margin-top: 6px; font-size: 12px;">
                     </div>
+
+                </div>
 
                 <?php if (!empty($participants)): ?>
 
@@ -544,8 +481,7 @@
                                     <tr
                                         class="participant-row"
                                         data-participant-id="<?php echo (int) $p['id']; ?>"
-                                        data-survey-id="<?php echo (int)  $survey['id']; ?>"
-                                    >
+                                        data-survey-id="<?php echo (int)  $survey['id']; ?>">
 
                                         <td style="padding: 10px 12px; color: #94a3b8;">
                                             <?php echo ($index + 1); ?>
@@ -561,8 +497,7 @@
                                             <input
                                                 type="text"
                                                 class="form-control participant-first-name-input hidden"
-                                                value="<?php echo HTML::chars($p['first_name']); ?>"
-                                            >
+                                                value="<?php echo HTML::chars($p['first_name']); ?>">
 
                                         </td>
 
@@ -576,8 +511,7 @@
                                             <input
                                                 type="text"
                                                 class="form-control participant-last-name-input hidden"
-                                                value="<?php echo HTML::chars($p['last_name']); ?>"
-                                            >
+                                                value="<?php echo HTML::chars($p['last_name']); ?>">
 
                                         </td>
 
@@ -591,8 +525,7 @@
                                             <input
                                                 type="email"
                                                 class="form-control participant-email-input hidden"
-                                                value="<?php echo HTML::chars($p['email']); ?>"
-                                            >
+                                                value="<?php echo HTML::chars($p['email']); ?>">
 
                                         </td>
 
@@ -635,7 +568,7 @@
 
                     <!-- Participants Pagination -->
                     <div id="participants-pagination"
-                         style="text-align: center; padding: 10px 15px; border-top: 1px solid #e2e8f0;">
+                        style="text-align: center; padding: 10px 15px; border-top: 1px solid #e2e8f0;">
                     </div>
 
                 <?php else: ?>
@@ -643,7 +576,7 @@
                     <div style="padding: 40px 20px; text-align: center;">
 
                         <i class="glyphicon glyphicon-user"
-                           style="font-size: 30px; color: #cbd5e1; margin-bottom: 10px;"></i>
+                            style="font-size: 30px; color: #cbd5e1; margin-bottom: 10px;"></i>
 
                         <p style="margin: 0; color: #64748b; font-size: 13px;">
                             No participants uploaded yet.
@@ -670,6 +603,13 @@
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
 <script>
+    window.scheduleConfig = {
+        recurrenceRuleId: '<?php echo HTML::chars($recurrence_rule_val); ?>',
+        weekday: '<?php echo HTML::chars($weekday_val); ?>',
+        monthDay: '<?php echo HTML::chars($month_day_val); ?>',
+        quarterMonth: '<?php echo HTML::chars($quarter_month_val); ?>'
+    };
+
     window.participantUrls = {
         add: '<?= URL::site('participant/add') ?>',
         edit: '<?= URL::site('participant/edit') ?>',
@@ -680,4 +620,3 @@
 <script type="text/javascript" src="<?php echo URL::base(); ?>assets/js/participant.js"></script>
 <script type="text/javascript" src="<?php echo URL::base(); ?>assets/js/schedule-preview.js"></script>
 <script type="text/javascript" src="<?php echo URL::base(); ?>assets/js/pagination.js"></script>
-
