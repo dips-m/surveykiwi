@@ -32,7 +32,7 @@ $(document).ready(function () {
 
             dataType: 'json',
 
-            success: function (response) {
+            success: function (response) {                
 
                 if (response.status === 'success') {
 
@@ -350,6 +350,7 @@ $(document).ready(function () {
                      * Remove only this participant row
                      */
                     row.remove();
+                    location.reload();
 
                 } else {
 

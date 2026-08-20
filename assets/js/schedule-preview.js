@@ -203,6 +203,8 @@ $(document).ready(function() {
         savedQuarterMonth = '';
 
         updateRecurrenceFields();
+        // Update the hidden frequency input value as well
+        $('input[name="frequency"]').val($frequency.val());
     });
 
     $recurrenceRule.on('change', function() {

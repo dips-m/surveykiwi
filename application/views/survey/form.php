@@ -181,7 +181,7 @@
                                     <option value="monthly" <?php echo ($freq_val === 'monthly') ? 'selected' : ''; ?>>Monthly</option>
                                     <option value="quarterly" <?php echo ($freq_val === 'quarterly') ? 'selected' : ''; ?>>Quarterly</option>
                                 </select>
-                                <input type="hidden" name="frequency" value="<?php echo htmlspecialchars($freq_val); ?>">
+                                <input type="hidden" name="frequency" id="frequency_hidden" value="<?php echo htmlspecialchars($freq_val); ?>">
                             <?php else: ?>
                                 <select name="frequency" id="frequency" class="form-control" style="border-radius: 6px;">
                                     <option value="">Select</option>
