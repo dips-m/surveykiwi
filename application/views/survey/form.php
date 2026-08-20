@@ -966,6 +966,19 @@
                         {
                             onSuccess(data);
                         }
+
+                        if (data.survey_id)
+                        {
+                            sessionStorage.setItem('surveyAlert', JSON.stringify({
+                                type: 'success',
+                                message: data.message || 'Saved.'
+                            }));
+
+                            window.location.href = '/survey/edit/' + data.survey_id;
+                            return;
+                        }
+
+                        showAlert(form, 'success', data.message || 'Saved.');
                     }
                     else
                     {
@@ -998,6 +1011,24 @@
     });
 
     bindSectionForm(document.getElementById('survey-schedule-form'));
+
+    function restoreStoredAlert() {
+        var stored = sessionStorage.getItem('surveyAlert');
+
+        if (stored)
+        {
+            try
+            {
+                var alertData = JSON.parse(stored);
+                showAlert(root, alertData.type, alertData.message);
+            }
+            catch (e) {}
+
+            sessionStorage.removeItem('surveyAlert');
+        }
+    }
+
+    restoreStoredAlert();
 
 })();
 </script>
