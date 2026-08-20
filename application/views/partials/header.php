@@ -10,7 +10,7 @@
 
     <div class="sk-header-right">
         <div >
-            <a href="<?php echo URL::site('survey/create'); ?>" class="btn btn-primary sk-create-button">
+            <a href="<?php echo URL::site('survey/create'); ?>" class="btn btn-primary btn-sm">
                 Create Survey
             </a>
         </div>

@@ -110,14 +110,25 @@
                             >
                                 <span class="glyphicon glyphicon-eye-open"></span>
                             </a>
-                            <!-- Schedule -->
+
+                            <!-- Edit -->
                             <a
-                                href="<?php echo URL::site('schedule/'.$survey['id']); ?>"
+                                href="/survey/edit/<?php echo (int) $survey['id']; ?>"
                                 class="sk-icon-action"
-                                title="Schedule Survey"
-                                aria-label="Schedule Survey"
+                                title="Edit Survey"
+                                aria-label="Edit Survey"
                             >
-                                <span class="glyphicon glyphicon-calendar"></span>
+                                <span class="glyphicon glyphicon-pencil"></span>
+                            </a>
+
+                            <!-- Public View -->
+                            <a href="<?php echo 'survey/' . (int) $survey['id']; ?>"
+                                class="sk-icon-action"
+                                title="Public Survey Link"
+                                aria-label="Public Survey Link"
+                                target="_blank"
+                            >
+                                <span class="glyphicon glyphicon-share"></span>
                             </a>
                         </div>
                     </div>
