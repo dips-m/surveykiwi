@@ -174,6 +174,7 @@ $(document).ready(function() {
                 })
             );
         });
+        
 
         if (savedRuleId && $recurrenceRule.find('option[value="' + savedRuleId + '"]').length) {
             $recurrenceRule.val(savedRuleId);
@@ -664,18 +665,8 @@ $(document).ready(function() {
             }
         }
 
-        console.log('Schedule validation:', {
-            frequency: frequencyVal,
-            recurrenceRuleId: $recurrenceRule.val(),
-            weekday: $weekday.val(),
-            monthDay: $monthDay.val(),
-            quarterMonth: $quarterMonth.val(),
-            validationErrors: validationErrors,
-            hasError: hasError
-        });
 
         if (hasError) {
-            console.log('Form submission stopped because of:', validationErrors);
             return false;
         }
 
@@ -684,14 +675,6 @@ $(document).ready(function() {
         $btn.prop('disabled', true).html('<i class="glyphicon glyphicon-refresh"></i> Saving...');
 
         var formData = new FormData(form);
-
-        console.log('Submitting schedule:', {
-            frequency: formData.get('frequency'),
-            recurrence_rule_id: formData.get('recurrence_rule_id'),
-            weekday: formData.get('weekday'),
-            month_day: formData.get('month_day'),
-            quarter_month: formData.get('quarter_month')
-        });
 
         $.ajax({
             url: $(form).attr('action'),

@@ -73,7 +73,7 @@ class Controller_Survey extends Controller_Admin_Template
      */
     public function action_create()
     {
-        $this->_render_form(Model_Survey::blank(), array(), FALSE);
+         $this->_render_form(Model_Survey::blank(), array(), FALSE, array(), array(), array());
     }
  
     /**
@@ -95,10 +95,24 @@ class Controller_Survey extends Controller_Admin_Template
             throw HTTP_Exception::factory(404, 'Survey not found')
                 ->request($this->request);
         }
+
+        $schedule_model = Model::factory('Schedule');
+        $schedule = $schedule_model->get_by_survey_id($id);
+
+        // Calculate future dates if schedule exists
+        $scheduleEntries = array();
+
+        if ($schedule)
+        {
+            $scheduleEntries = $schedule_model->get_entries_by_schedule_id($schedule['id']);
+        }
+
+        $participant_model = Model::factory('Participant');
+        $participants = $participant_model->get_by_survey($id);
  
         $questions = Model_SurveyQuestion::find_by_survey($id);
  
-        $this->_render_form($survey, $questions, TRUE);
+        $this->_render_form($survey, $questions, TRUE, $schedule, $scheduleEntries, $participants);
     }
  
     public function action_save_details_and_questions()
@@ -286,7 +300,7 @@ class Controller_Survey extends Controller_Admin_Template
      * to $this->response directly, so Controller_Template::after() can do
      * its normal job of rendering $this->template (the layout) around it.
      */
-    protected function _render_form(array $survey, array $questions, $is_edit)
+    protected function _render_form(array $survey, array $questions, $is_edit, $schedule, $scheduleEntries, $participants)
     {
         $view = View::factory('survey/form')
             ->set('is_edit', $is_edit)
@@ -295,7 +309,10 @@ class Controller_Survey extends Controller_Admin_Template
             ->set('question_types', Model_SurveyQuestion::types())
             ->set('csrf_token', Security::token())
             ->set('save_details_and_questions_url', URL::site('survey/save_details_and_questions'))
-            ->set('save_schedule_url', URL::site('survey/save_schedule'));
+            ->set('save_schedule_url', URL::site('survey/save_schedule'))
+            ->set('schedule', $schedule)
+            ->set('scheduleDates', $scheduleEntries)
+            ->set('participants', $participants);
  
         // Adjust these two lines if Controller_Admin_Template uses
         // different property names for the page title / content region.
