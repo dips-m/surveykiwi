@@ -72,6 +72,25 @@ DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
+-- Table: schedule_recurrence_rules
+-- --------------------------------------------------------
+
+CREATE TABLE `schedule_recurrence_rules` (
+    `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+    `rule_key` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `rule_name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+    `is_active` tinyint(1) NOT NULL DEFAULT '1',
+    `sort_order` int NOT NULL DEFAULT '0',
+    `created_at` timestamp NOT NULL,
+    `updated_at` timestamp NOT NULL,
+    PRIMARY KEY (`id`),
+    KEY `idx_rule_key` (`rule_key`),
+    KEY `idx_is_active` (`is_active`)
+) ENGINE=InnoDB
+DEFAULT CHARSET=utf8mb4
+COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
 -- Table: survey_schedules
 -- --------------------------------------------------------
 
@@ -85,18 +104,38 @@ CREATE TABLE `survey_schedules` (
         'monthly',
         'quarterly'
     ) COLLATE utf8mb4_unicode_ci NOT NULL,
-    `start_date` timestamp NOT NULL,
-    `end_date` timestamp NULL DEFAULT NULL,
+
+    `recurrence_rule_id` bigint UNSIGNED DEFAULT NULL,
+    `weekday` tinyint UNSIGNED DEFAULT NULL,
+    `month_day` tinyint UNSIGNED DEFAULT NULL,
+    `quarter_month` tinyint UNSIGNED DEFAULT NULL,
+
+    `start_date` date NOT NULL,
+    `start_time` time NOT NULL,
+    `end_date` date NOT NULL,
+    `end_time` time NOT NULL,
+
     `reminders_enabled` tinyint(1) NOT NULL DEFAULT '0',
     `is_active` tinyint(1) NOT NULL DEFAULT '1',
     `created_at` timestamp NULL DEFAULT NULL,
     `updated_at` timestamp NULL DEFAULT NULL,
+
     PRIMARY KEY (`id`),
-    KEY `survey_schedules_survey_id_foreign` (`survey_id`),
+
+    KEY `survey_schedules_survey_id_foreign`
+        (`survey_id`),
+
+    KEY `idx_survey_schedules_recurrence_rule_id`
+        (`recurrence_rule_id`),
+
     CONSTRAINT `survey_schedules_survey_id_foreign`
         FOREIGN KEY (`survey_id`)
         REFERENCES `surveys` (`id`)
-        ON DELETE CASCADE
+        ON DELETE CASCADE,
+
+    CONSTRAINT `fk_survey_schedules_recurrence_rule`
+        FOREIGN KEY (`recurrence_rule_id`)
+        REFERENCES `schedule_recurrence_rules` (`id`)
 ) ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
@@ -114,9 +153,12 @@ CREATE TABLE `survey_schedule_entries` (
     `creator_email_sent` tinyint(1) NOT NULL DEFAULT '0',
     `created_at` timestamp NULL DEFAULT NULL,
     `updated_at` timestamp NULL DEFAULT NULL,
+
     PRIMARY KEY (`id`),
+
     KEY `survey_schedule_entries_schedule_id_index`
         (`survey_schedule_id`),
+
     CONSTRAINT `survey_schedule_entries_schedule_id_foreign`
         FOREIGN KEY (`survey_schedule_id`)
         REFERENCES `survey_schedules` (`id`)
@@ -159,7 +201,6 @@ CREATE TABLE `survey_invitations` (
         FOREIGN KEY (`survey_participant_id`)
         REFERENCES `survey_participants` (`id`)
         ON DELETE CASCADE
-
 ) ENGINE=InnoDB
 DEFAULT CHARSET=utf8mb4
 COLLATE=utf8mb4_unicode_ci;
