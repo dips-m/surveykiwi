@@ -14,6 +14,7 @@ class Controller_Schedule extends Controller_Template
 
         $schedule_model = Model::factory('Schedule');
         $schedule = $schedule_model->get_by_survey_id($id);
+        $recurrenceRules = $schedule_model->get_recurrence_rules();
 
         // Calculate future dates if schedule exists
         $scheduleEntries = array();
@@ -29,6 +30,7 @@ class Controller_Schedule extends Controller_Template
         $this->template->content = View::factory('survey/schedule')
             ->set('survey', $survey)
             ->set('schedule', $schedule)
+            ->set('recurrenceRules', $recurrenceRules)
             ->set('scheduleDates', $scheduleEntries)
             ->set('participants', $participants);
     }
@@ -84,11 +86,16 @@ class Controller_Schedule extends Controller_Template
             /*
              * Save schedule.
              */
-            $schedule_model->save(
+            $result =  $schedule_model->save(
                 $id,
                 $schedule_id,
                 $this->request->post()
             );
+
+            if (!$result['success'])
+            {
+                return $this->_json_response($result['success'] ,$result['message']);
+            }
 
             /*
              * Import participants only when a new CSV
