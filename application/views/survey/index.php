@@ -138,19 +138,15 @@
                                         class="glyphicon glyphicon-pencil"
                                     ></span>
                                 </a>
-                                <a
-                                    href="<?php
-                                    echo URL::site(
-                                        'schedule/'
-                                        . (int) $survey['id']
-                                    );
-                                    ?>"
+
+                                <!-- Public View -->
+                                <a href="<?php echo 'survey/' . (int) $survey['id']; ?>"
                                     class="btn btn-xs btn-default"
-                                    title="Manage Schedule"
+                                    title="Public Survey Link"
+                                    aria-label="Public Survey Link"
+                                    target="_blank"
                                 >
-                                    <span
-                                        class="glyphicon glyphicon-calendar"
-                                    ></span>
+                                    <span class="glyphicon glyphicon-share"></span>
                                 </a>
                             </td>
                         </tr>

@@ -727,15 +727,7 @@
                 </div>
             </div>
         </div>
-
     </div>
-
-    <div class="section-footer" style="margin-top: 16px;">
-        <a href="<?php echo URL::site('survey'); ?>" class="btn btn-default">
-            <?php echo $is_edit ? 'Done' : 'Cancel'; ?>
-        </a>
-    </div>
-
 </div>
 
 <!-- Template for a blank question row, cloned by JS on "Add Question" -->
