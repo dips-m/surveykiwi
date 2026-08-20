@@ -1,5 +1,8 @@
 START TRANSACTION;
 
+INSERT INTO `users` (`name`,`email`,`password`,`status`,`created_at`,`updated_at`) VALUES
+('SurveyKiwi Admin','admin@example.com','$2y$10$h.CfUn3SaztUgIttVPj8eOeHxr2ruDpwo2RIt4FaCMoDT7ZXHaK9y','active',NOW(),NOW());
+
 INSERT INTO `surveys` (`id`,`title`,`description`,`status`,`created_at`,`updated_at`) VALUES
 (1,'Customer Satisfaction Survey','Measure overall customer satisfaction and service experience.','published',NOW(),NOW()),
 (2,'Employee Engagement Survey','Understand employee engagement, satisfaction and workplace experience.','published',NOW(),NOW()),

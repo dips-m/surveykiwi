@@ -9,21 +9,18 @@
     </div>
 
     <div class="sk-header-right">
-        <button
-            type="button"
-            class="btn btn-link sk-mobile-menu"
-            data-toggle="collapse"
-            data-target="#sk-sidebar"
-        >
+        <div >
+            <a href="<?php echo URL::site('survey/create'); ?>" class="btn btn-primary sk-create-button">
+                Create Survey
+            </a>
+        </div>
+        
+
+        <button type="button" class="btn btn-link sk-mobile-menu" data-toggle="collapse" data-target="#sk-sidebar">
             <span class="glyphicon glyphicon-menu-hamburger"></span>
         </button>
         <div class="dropdown">
-            <a
-                href="#"
-                class="dropdown-toggle sk-user"
-                data-toggle="dropdown"
-                role="button"
-            >
+            <a href="#" class="dropdown-toggle sk-user" data-toggle="dropdown" role="button">
                 <span class="sk-avatar">A</span>
                 <span class="sk-user-name">
                     Admin
@@ -40,7 +37,7 @@
                 </li>
                 <li role="separator" class="divider"></li>
                 <li>
-                    <a href="#">
+                    <a href="<?php echo URL::site('logout'); ?>">
                         <span class="glyphicon glyphicon-log-out"></span>
                         Logout
                     </a>

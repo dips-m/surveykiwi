@@ -85,6 +85,11 @@ body {
 .sk-header-right {
     display: flex;
     align-items: center;
+    gap: 25px;
+}
+
+.sk-header-button{
+    font-size: 12px;
 }
 
 .sk-user {
@@ -931,6 +936,160 @@ body {
     background: var(--sk-navy-900);
     border-color: var(--sk-navy-900);
 }
+
+#survey-form .panel-heading { padding: 10px 15px; cursor: pointer; user-select: none; }
+#survey-form .panel-heading .panel-heading-row { display: flex; align-items: center; justify-content: space-between; }
+#survey-form .panel-heading .glyphicon-chevron-down { transition: transform .15s ease; }
+#survey-form .panel-heading.collapsed .glyphicon-chevron-down { transform: rotate(-90deg); }
+#survey-form .panel-body { padding: 12px 15px; }
+#survey-form .form-group { margin-bottom: 10px; }
+#survey-form .form-group label { margin-bottom: 3px; font-weight: 600; font-size: 12px; color: #667085; }
+#survey-form .form-control { height: 32px; padding: 5px 10px; font-size: 13px; }
+#survey-form textarea.form-control { height: auto; }
+#survey-form fieldset[disabled] { opacity: .55; }
+#survey-form .row-columns { margin-bottom: 0; }
+#survey-form .row-columns > [class^="col-"] { display: flex; flex-direction: column; }
+#survey-form .row-columns .panel { flex: 1 1 auto; }
+#survey-form .row-schedule { margin-top: 15px; }
+
+#survey-form-toolbar { margin-bottom: 10px; text-align: right; }
+
+.section-locked-note {
+    background: #fff8e1;
+    border: 1px solid #ffe4a3;
+    color: #7a5b00;
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+.section-alert {
+    font-size: 12px;
+    padding: 6px 10px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    display: none;
+}
+.section-alert.section-alert-success { background: #e6f6ec; color: #196c3c; border: 1px solid #b7e5c7; display: block; }
+.section-alert.section-alert-error   { background: #fdecea; color: #a4231b; border: 1px solid #f5c2be; display: block; }
+.section-alert ul { margin: 0; padding-left: 18px; }
+
+.section-footer { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.section-footer .btn[disabled] { cursor: not-allowed; }
+
+.question-row {
+    border: 1px solid #e5e9ef;
+    border-radius: 5px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    background: #fafbfc;
+}
+.question-row-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.question-row-number {
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #e8edf6;
+    color: #24466f;
+    font-size: 11px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 7px;
+}
+
+/* FIXED HEIGHT QUESTION TEXTAREA — this is the rule that matters */
+#survey-form .question-row-text,
+#survey-form textarea.question-row-text {
+    flex: 1 1 auto;
+    height: 36px !important;
+    min-height: 36px !important;
+    max-height: 36px !important;
+    padding: 6px 8px;
+    font-size: 13px;
+    line-height: 1.4;
+    resize: none !important;
+    overflow-y: auto;
+}
+
+.question-row-type {
+    flex: 0 0 140px;
+    height: 36px;
+    padding: 4px 8px;
+    font-size: 13px;
+}
+.question-row-remove {
+    flex: 0 0 auto;
+    border: 0;
+    background: transparent;
+    color: #98a2b3;
+    padding: 4px 6px;
+    margin-top: 3px;
+    cursor: pointer;
+}
+.question-row-remove:hover { color: #c0392b; }
+
+.question-row-fields {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    padding-left: 30px;
+    margin-bottom: 4px;
+}
+.question-row-required {
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: normal;
+    color: #667085;
+    white-space: nowrap;
+    margin: 0;
+}
+
+.question-options-repeater {
+    padding-left: 30px;
+    margin-top: 4px;
+}
+.question-options-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    color: #667085;
+    margin-bottom: 4px;
+}
+.option-rows { margin-bottom: 6px; }
+.option-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 3px;
+}
+.option-row-input {
+    flex: 1 1 auto;
+    height: 28px;
+    padding: 4px 8px;
+    font-size: 12px;
+}
+.option-row-remove {
+    flex: 0 0 auto;
+    border: 0;
+    background: transparent;
+    color: #98a2b3;
+    padding: 2px 6px;
+    cursor: pointer;
+}
+.option-row-remove:hover { color: #c0392b; }
+
+#add-question-btn { margin-top: 4px; margin-bottom: 10px; }
+
+.schedule-fields { display: flex; gap: 12px; }
+.schedule-fields .form-group { flex: 1 1 0; }
 
 @media (max-width: 768px) {
     #add-participant-form .form-control,

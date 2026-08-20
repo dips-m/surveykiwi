@@ -125,6 +125,61 @@ Kohana::modules(array(
 	));
 
 /**
+ * User login
+ */
+Route::set('login','login')
+	->defaults(
+		array(
+			'controller' => 'Auth',
+			'action'     => 'login',
+		)
+	);
+
+/**
+ * User logout
+ */
+Route::set('logout','logout')
+	->defaults(
+		array(
+			'controller' => 'Auth',
+			'action'     => 'logout',
+		)
+	);
+
+/**
+ * Survey create
+ */
+Route::set('survey', 'survey')
+    ->defaults(array(
+        'controller' => 'survey',
+        'action'     => 'save_details_and_questions',
+    ));
+
+/**
+ * Survey edit
+ */
+Route::set('survey', 'survey(/<action>(/<id>))',
+	array(
+		'id' => '\d+')
+	);
+
+/**
+ * Survey view
+ */
+Route::set(
+	'survey.public',
+	'survey/<id>',
+	array(
+		'id' => '[0-9]+',
+	)
+)->defaults(
+	array(
+		'controller' => 'SurveyPublic',
+		'action'     => 'public',
+	)
+);
+
+/**
  * Survey schedule
  */
 Route::set('schedule', 'schedule(/<id>)')

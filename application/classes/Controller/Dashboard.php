@@ -1,6 +1,6 @@
 <?php defined('SYSPATH') or die('No direct script access.');
 
-class Controller_Dashboard extends Controller
+class Controller_Dashboard extends Controller_Admin_Template
 {
     public function action_index()
     {
@@ -12,24 +12,15 @@ class Controller_Dashboard extends Controller
             $surveys
         );
 
-        $view = View::factory(
-            'dashboard/index'
-        );
+        $view = View::factory('dashboard/index');
 
         $view->surveys = $surveys;
+        $view->total_surveys = $counts['total'];
+        $view->published_surveys = $counts['published'];
+        $view->draft_surveys = $counts['draft'];
+        $view->closed_surveys = $counts['closed'];
 
-        $view->total_surveys =
-            $counts['total'];
-
-        $view->published_surveys =
-            $counts['published'];
-
-        $view->draft_surveys =
-            $counts['draft'];
-
-        $view->closed_surveys =
-            $counts['closed'];
-
-        $this->response->body($view);
+        $this->template->content = $view;
+        $this->template->title = 'Dashboard - SurveyKiwi';
     }
 }
