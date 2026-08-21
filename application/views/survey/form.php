@@ -831,6 +831,13 @@
 
         if (removeQuestionBtn)
         {
+            var confirmed = window.confirm('Remove this question? This cannot be undone.');
+
+            if ( ! confirmed)
+            {
+                return;
+            }
+
             var row = removeQuestionBtn.closest('.question-row');
 
             if (row)

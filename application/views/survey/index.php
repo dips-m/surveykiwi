@@ -19,6 +19,7 @@
                     <th>Questions</th>
                     <th>Recurring</th>
                     <th>Participants</th>
+                    <th>Status</th>
                     <th>Created</th>
                     <th width="130">Actions</th>
                 </tr>
@@ -90,6 +91,25 @@
                                 <?php
                                 echo (int) $survey['participants'];
                                 ?>
+                            </td>
+                            <td>
+                                <?php
+                                    $status = $survey['status'];
+
+                                    $status_colors = array(
+                                        'draft'     => '#999999',
+                                        'published' => '#5cb85c',
+                                        'closed'    => '#d9534f',
+                                    );
+
+                                    $dot_color = isset($status_colors[$status])
+                                        ? $status_colors[$status]
+                                        : '#999999';
+                                ?>
+
+                                <span
+                                    style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:<?php echo $dot_color; ?>; margin-right:6px;"
+                                ></span><?php echo HTML::chars(ucfirst($status)); ?>
                             </td>
                             <td>
                                 <?php
