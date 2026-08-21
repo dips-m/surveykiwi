@@ -179,7 +179,7 @@ class Controller_Survey extends Controller_Admin_Template
                     continue;
                 }
 
-                $options = implode("\n", $option_lines);
+                $options = implode(",", $option_lines);
             }
             else
             {

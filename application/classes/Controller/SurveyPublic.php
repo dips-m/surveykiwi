@@ -51,12 +51,15 @@ class Controller_SurveyPublic extends Controller
             if ( ! empty($question['options']))
             {
                 $parts = preg_split(
-                    '/\s+/',
+                    '/\s*,\s*/',
                     trim($question['options'])
                 );
 
                 $question['options'] = array_values(
-                    array_filter($parts, 'strlen')
+                    array_filter(
+                        array_map('trim', $parts),
+                        'strlen'
+                    )
                 );
             }
             else
@@ -64,6 +67,7 @@ class Controller_SurveyPublic extends Controller
                 $question['options'] = array();
             }
         }
+
         unset($question);
 
         $view = View::factory('survey/public');
