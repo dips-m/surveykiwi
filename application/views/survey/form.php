@@ -19,7 +19,7 @@
     $start_datetime_past = !empty($start_date_val) && !empty($start_time_val) && strtotime($start_date_val . ' ' . $start_time_val) < time();
 
     $disabled_freq = $start_date_past ? 'disabled' : '';
-    $disabled_participant_add = $schedule['id'] ? '' : 'disabled';
+    $disabled_participant_add = $schedule ? '' : 'disabled';
 ?>
 
 <div class="sk-page-header">
