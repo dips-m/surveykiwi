@@ -55,7 +55,7 @@ class Task_Notifications extends Minion_Task
             // Update the status of schedule
             $update_schedule = DB::update('survey_schedule_entries')
                 ->set(array('status' => 'past'))
-                ->where('schedule_id', '=', $schedule['id'])
+                ->where('id', '=', $schedule['id'])
                 ->execute();
 
         }
