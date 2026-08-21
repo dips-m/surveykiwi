@@ -202,7 +202,7 @@ class Service_Mailer
             ->set('participant', $participant)
             ->set('participant_name', $name)
             ->set('survey', $survey)
-            ->set('survey_url', URL::site('/survey/'.$schedule['id']), TRUE)
+            ->set('survey_url', URL::base(TRUE) . 'survey/' . $schedule['id'], TRUE)
             ->render();
     }
 
