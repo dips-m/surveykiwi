@@ -801,6 +801,17 @@
         repeater.style.display = CHOICE_TYPES.indexOf(select.value) === -1 ? 'none' : '';
     }
 
+    function renumberQuestions() {
+        var rows = container.querySelectorAll('.question-row');
+
+        rows.forEach(function (row, i) {
+            var numberEl = row.querySelector('.question-row-number');
+            if (numberEl) {
+                numberEl.textContent = i + 1;
+            }
+        });
+    }
+
     addButton.addEventListener('click', function () {
         var html    = rowTemplate.split('__INDEX__').join(nextIndex);
         var wrapper = document.createElement('div');
@@ -811,6 +822,8 @@
         toggleOptionsVisibility(row);
 
         nextIndex += 1;
+
+        renumberQuestions();
     });
 
     container.addEventListener('click', function (event) {
@@ -824,6 +837,8 @@
             {
                 row.parentNode.removeChild(row);
             }
+
+            renumberQuestions();
 
             return;
         }
@@ -931,6 +946,10 @@
                 }
             }
 
+            // Capture BEFORE the save whether this was a brand-new survey.
+            var idInput   = root.querySelector('input[name="id"]');
+            var wasNewSurvey = ! idInput || ! idInput.value;
+
             var submitBtn = form.querySelector('button[type="submit"]');
             var indicator = form.querySelector('[data-role="saving-indicator"]');
 
@@ -953,8 +972,6 @@
 
                     if (data.success)
                     {
-                        showAlert(form, 'success', data.message || 'Saved.');
-
                         if (data.survey_id)
                         {
                             root.querySelectorAll('input[name="id"], input[name="survey_id"]').forEach(function (input) {
@@ -962,12 +979,8 @@
                             });
                         }
 
-                        if (typeof onSuccess === 'function')
-                        {
-                            onSuccess(data);
-                        }
-
-                        if (data.survey_id)
+                        // Brand-new survey's first save → redirect to the edit URL.
+                        if (wasNewSurvey && data.survey_id)
                         {
                             sessionStorage.setItem('surveyAlert', JSON.stringify({
                                 type: 'success',
@@ -978,7 +991,13 @@
                             return;
                         }
 
+                        // Already-existing survey → stay on page, show alert, run onSuccess in place.
                         showAlert(form, 'success', data.message || 'Saved.');
+
+                        if (typeof onSuccess === 'function')
+                        {
+                            onSuccess(data);
+                        }
                     }
                     else
                     {

@@ -18,7 +18,7 @@
 <div class="question-row">
 
     <div class="question-row-head">
-        <span class="question-row-number"><?php echo (int) $index + 1; ?></span>
+        <span class="question-row-number"><?php echo is_numeric($index) ? ((int) $index + 1) : '__ROW_NUMBER__'; ?></span>
 
         <textarea
             name="questions[<?php echo $index; ?>][question]"
