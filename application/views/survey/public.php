@@ -182,6 +182,25 @@
                                         endforeach;
                                         break;
 
+                                        case 'select':
+                                            ?>
+                                                <select
+                                                    name="answers[<?php echo (int) $question['id']; ?>]"
+                                                    class="form-control"
+                                                    <?php echo !empty($question['is_required']) ? 'required' : ''; ?>
+                                                >
+                                                    <option value="">-- Select an option --</option>
+                                        
+                                                    <?php foreach ($question['options'] as $option): ?>
+                                                        <option value="<?php echo HTML::chars($option); ?>">
+                                                            <?php echo HTML::chars($option); ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                        
+                                                </select>
+                                            <?php
+                                            break;
+
                                     default:
                                         ?>
                                         <p class="text-muted">Unsupported question type.</p>
