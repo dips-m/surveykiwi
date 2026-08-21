@@ -982,21 +982,17 @@
                             root.querySelectorAll('input[name="id"], input[name="survey_id"]').forEach(function (input) {
                                 input.value = data.survey_id;
                             });
+
+                            // Update the URL to the edit URL WITHOUT reloading the page,
+                            // so a brand-new survey behaves the same as editing an existing one.
+                            var editUrl = '/survey/edit/' + data.survey_id;
+
+                            if (window.location.pathname !== editUrl)
+                            {
+                                history.pushState({}, '', editUrl);
+                            }
                         }
 
-                        // Brand-new survey's first save → redirect to the edit URL.
-                        if (wasNewSurvey && data.survey_id)
-                        {
-                            sessionStorage.setItem('surveyAlert', JSON.stringify({
-                                type: 'success',
-                                message: data.message || 'Saved.'
-                            }));
-
-                            window.location.href = '/survey/edit/' + data.survey_id;
-                            return;
-                        }
-
-                        // Already-existing survey → stay on page, show alert, run onSuccess in place.
                         showAlert(form, 'success', data.message || 'Saved.');
 
                         if (typeof onSuccess === 'function')
