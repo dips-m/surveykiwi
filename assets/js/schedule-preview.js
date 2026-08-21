@@ -692,7 +692,7 @@ $(document).ready(function() {
 
                     setTimeout(function() {
                         location.reload();
-                    }, 1000);
+                    }, 1500);
                 } else {
                     $('#alert-container').html('<div class="alert alert-danger alert-dismissible"><button type="button" class="close" data-dismiss="alert">&times;</button>' + response.message + '</div>');
 
