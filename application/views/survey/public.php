@@ -109,7 +109,7 @@
                                 <?php
                                 if (
                                     ! empty(
-                                        $question['is_required']
+                                        $question['settings']
                                     )
                                 ):
                                 ?>
