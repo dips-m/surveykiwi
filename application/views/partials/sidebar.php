@@ -6,8 +6,8 @@ $current_controller = strtolower(
 );
 ?>
 
-<aside id="sk-sidebar" class="sk-sidebar collapse in">
-    
+<aside id="sk-sidebar" class="sk-sidebar collapse">
+
     <nav>
         <div class="sk-nav-section">
             Workspace

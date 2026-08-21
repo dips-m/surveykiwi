@@ -56,15 +56,18 @@
                                 </strong>
 
                                 <?php if ( ! empty($survey['description'])): ?>
-                                    <br>
+                                <br>
                                     <small class="text-muted">
                                         <?php
-                                        echo HTML::chars(
-                                            $survey['description']
-                                        );
+                                        $words = explode(' ', $survey['description']);
+
+                                        $truncated = count($words) > 5
+                                            ? implode(' ', array_slice($words, 0, 5)) . '…'
+                                            : $survey['description'];
+
+                                        echo HTML::chars($truncated);
                                         ?>
                                     </small>
-
                                 <?php endif; ?>
                             </td>
                             <td>
