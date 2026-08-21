@@ -2,6 +2,7 @@
     $errors = Session::instance()->get_once('form_errors', array());
     $old = Session::instance()->get_once('form_data', array());
 
+    $schedule = isset($schedule) ? $schedule : NULL;
     $freq_val = isset($old['frequency']) ? $old['frequency'] : (isset($schedule['frequency']) ? $schedule['frequency'] : '');
     $start_date_val = isset($old['start_date']) ? $old['start_date'] : (isset($schedule['start_date']) ? date('Y-m-d', strtotime($schedule['start_date'])) : '');
     $end_date_val = isset($old['end_date']) ? $old['end_date'] : (isset($schedule['end_date']) ? date('Y-m-d', strtotime($schedule['end_date'])) : '');
@@ -18,6 +19,7 @@
     $start_datetime_past = !empty($start_date_val) && !empty($start_time_val) && strtotime($start_date_val . ' ' . $start_time_val) < time();
 
     $disabled_freq = $start_date_past ? 'disabled' : '';
+    $disabled_participant_add = $schedule['id'] ? '' : 'disabled';
 ?>
 
 <div class="sk-page-header">
@@ -547,25 +549,23 @@
                 <!-- Add Participant -->
                 <div style="padding: 12px 10px; border-bottom: 1px solid #e2e8f0; background: #f8fafc;">
 
-                    <form id="add-participant-form"
-                        style="display: flex; align-items: center; gap: 8px; width: 100%;">
-
+                    <form id="add-participant-form" style="display: flex; align-items: flex-start; gap: 8px; width: 100%;" novalidate>
                         <input type="hidden" name="survey_id" value="<?= (int) $survey['id'] ?>">
-
-                        <input type="text" name="first_name" id="participant-first-name" class="form-control input-field" placeholder="First Name" required
-                            style="flex: 1; min-width: 0;">
-
-                        <input type="text" name="last_name" id="participant-last-name" class="form-control input-field" placeholder="Last Name" required
-                            style="flex: 1; min-width: 0;">
-
-                        <input type="email" name="email" id="participant-email" class="form-control input-field" placeholder="Email" required
-                            style="flex: 1.5; min-width: 0;">
-
-                        <button type="submit" id="add-participant-btn" class="btn btn-primary btn-sm" title="Add Participant"
-                            style="background-color: #2e5490; border-color: #2e5490; padding: 8px 20px; font-weight: 500; border-radius: 6px; flex: 0 0 auto; white-space: nowrap;">
-                            Add
-                        </button>
-
+                        <div style="flex: 1; min-width: 0;">
+                            <input type="text" name="first_name" id="participant-first-name" class="form-control input-field" placeholder="First Name" style="width: 100%;">
+                            <div id="participant-first-name-message" class="participant-field-message"></div>
+                        </div>
+                        <div style="flex: 1; min-width: 0;">
+                            <input type="text" name="last_name" id="participant-last-name" class="form-control input-field" placeholder="Last Name" style="width: 100%;">
+                            <div id="participant-last-name-message" class="participant-field-message"></div>
+                        </div>
+                        <div style="flex: 1.5; min-width: 0;">
+                            <input type="email" name="email" id="participant-email" class="form-control input-field" placeholder="Email" style="width: 100%;">
+                            <div id="participant-email-message" class="participant-field-message"></div>
+                        </div>
+                        <button type="submit" id="add-participant-btn" class="btn btn-primary btn-sm" title="Add Participant" 
+                            style="background-color: #2e5490; border-color: #2e5490; padding: 8px 20px; font-weight: 500; border-radius: 6px; flex: 0 0 auto; white-space: nowrap;"
+                             <?php echo $disabled_participant_add ?>>Add</button>
                     </form>
 
                     <div id="participant-add-message"

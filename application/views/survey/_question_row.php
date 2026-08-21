@@ -5,7 +5,7 @@
     // Supports both a legacy newline-separated string and an already-array value.
     $option_values = is_array($question['options'])
         ? $question['options']
-        : array_filter(array_map('trim', explode("\n", (string) $question['options'])), 'strlen');
+        : array_filter(array_map('trim', explode(",", (string) $question['options'])), 'strlen');
 
     $option_values = array_values($option_values);
 

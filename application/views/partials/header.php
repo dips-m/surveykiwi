@@ -8,17 +8,18 @@
         </a>
     </div>
 
+    <button type="button" class="btn btn-link sk-mobile-menu" data-toggle="collapse" data-target="#sk-sidebar">
+        <span class="glyphicon glyphicon-menu-hamburger"></span>
+    </button>
+
     <div class="sk-header-right">
-        <div >
+        <div class="sk-header-action">
             <a href="<?php echo URL::site('survey/create'); ?>" class="btn btn-primary btn-sm">
-                Create Survey
+                <span class="glyphicon glyphicon-plus sk-create-icon"></span>
+                <span class="sk-create-text">Create Survey</span>
             </a>
         </div>
-        
 
-        <button type="button" class="btn btn-link sk-mobile-menu" data-toggle="collapse" data-target="#sk-sidebar">
-            <span class="glyphicon glyphicon-menu-hamburger"></span>
-        </button>
         <div class="dropdown">
             <a href="#" class="dropdown-toggle sk-user" data-toggle="dropdown" role="button">
                 <span class="sk-avatar">A</span>

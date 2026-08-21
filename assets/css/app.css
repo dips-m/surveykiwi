@@ -1105,6 +1105,77 @@ body {
 .schedule-fields { display: flex; gap: 12px; }
 .schedule-fields .form-group { flex: 1 1 0; }
 
+.sk-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+    flex-wrap: nowrap;
+}
+
+.sk-brand a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.sk-header-right {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.sk-mobile-menu {
+    display: none;
+}
+
+.sk-create-icon {
+    display: none;
+}
+
+/* Tablet and below */
+@media (max-width: 768px) {
+    .sk-header {
+        padding: 10px 15px;
+    }
+
+    .sk-mobile-menu {
+        display: inline-block;
+    }
+
+    .sk-logo-text {
+        font-size: 14px;
+    }
+
+    .sk-header-right {
+        gap: 8px;
+    }
+}
+
+/* Small phones — collapse "Create Survey" text to just an icon */
+@media (max-width: 480px) {
+    .sk-create-text {
+        display: none;
+    }
+
+    .sk-create-icon {
+        display: inline-block;
+        margin: 0;
+    }
+
+    .sk-header-action .btn {
+        padding: 6px 10px;
+    }
+
+    .sk-user-name {
+        display: none;
+    }
+
+    .sk-user .caret {
+        display: none;
+    }
+}
+
 @media (max-width: 768px) {
     #add-participant-form .form-control,
     #add-participant-btn {
@@ -1225,4 +1296,23 @@ body {
         margin-top: 5px;
     }
 
+}
+
+/* Desktop/tablet: sidebar always visible, ignore Bootstrap's collapse state */
+@media (min-width: 769px) {
+    #sk-sidebar.collapse {
+        display: block;
+        height: auto !important;
+    }
+}
+
+/* Mobile: closed by default, opens only via the hamburger toggle (.in class added by Bootstrap JS) */
+@media (max-width: 768px) {
+    #sk-sidebar.collapse {
+        display: none;
+    }
+
+    #sk-sidebar.collapse.in {
+        display: block;
+    }
 }
