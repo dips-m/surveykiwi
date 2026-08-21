@@ -60,7 +60,11 @@ class Service_Mailer
      */
     public function send_creator_notification(array $entry)
     {
-        $creator_email = $this->_config['creator_email'];
+        $creator_email = DB::select('email')
+            ->from('users')
+            ->where('id', '=', 1)
+            ->execute()
+            ->get('email');
 
         return $this->_send(
             $creator_email,
