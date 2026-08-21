@@ -937,6 +937,20 @@ body {
     border-color: var(--sk-navy-900);
 }
 
+.participant-field-message {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.participant-field-message.error {
+    color: #dc2626;
+}
+
+.participant-field-message.success {
+    color: #16a34a;
+}
+
 #survey-form .panel-heading { padding: 10px 15px; cursor: pointer; user-select: none; }
 #survey-form .panel-heading .panel-heading-row { display: flex; align-items: center; justify-content: space-between; }
 #survey-form .panel-heading .glyphicon-chevron-down { transition: transform .15s ease; }

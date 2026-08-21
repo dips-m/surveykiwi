@@ -34,7 +34,7 @@ $(document).ready(function () {
 
             success: function (response) {                
 
-                if (response.status === 'success') {
+                if (response.status) {
 
                     message
                         .text(response.message)
@@ -44,7 +44,7 @@ $(document).ready(function () {
 
                     setTimeout(function () {
                         window.location.reload();
-                    }, 500);
+                    }, 1000);
 
                 } else {
 
@@ -167,63 +167,79 @@ $(document).ready(function () {
         // Actual DB ID
         const participantId = row.data('participant-id');
         const surveyId = row.data('survey-id');
-       
 
-        const firstName = row
-            .find('.participant-first-name-input')
-            .val()
-            .trim();
+        const firstNameInput = row.find('.participant-first-name-input');
+        const lastNameInput = row.find('.participant-last-name-input');
+        const emailInput = row.find('.participant-email-input');
 
-        const lastName = row
-            .find('.participant-last-name-input')
-            .val()
-            .trim();
+        const firstName = firstNameInput.val().trim();
+        const lastName = lastNameInput.val().trim();
+        const email = emailInput.val().trim();
 
-        const email = row
-            .find('.participant-email-input')
-            .val()
-            .trim();
-
+        // Clear previous messages
+        row.find('.participant-field-message')
+            .removeClass('error success')
+            .text('');
 
         if (!participantId) {
-            alert('Participant ID not found.');
+            row.find('.participant-email-message')
+                .addClass('error')
+                .text('Participant ID not found.');
             return;
         }
 
         if (!firstName) {
-            alert('First name is required.');
+            firstNameInput.focus();
+
+            row.find('.participant-first-name-message')
+                .addClass('error')
+                .text('First name is required.');
+
             return;
         }
 
         if (!lastName) {
-            alert('Last name is required.');
+            lastNameInput.focus();
+
+            row.find('.participant-last-name-message')
+                .addClass('error')
+                .text('Last name is required.');
+
             return;
         }
 
         if (!email) {
-            alert('Email is required.');
+            emailInput.focus();
+
+            row.find('.participant-email-message')
+                .addClass('error')
+                .text('Email is required.');
+
             return;
         }
-
 
         /*
-         * Basic email validation
-         */
-        const emailPattern =
-            /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        * Basic email validation
+        */
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailPattern.test(email)) {
-            alert('Please enter a valid email address.');
+            emailInput.focus();
+
+            row.find('.participant-email-message')
+                .addClass('error')
+                .text('Please enter a valid email address.');
+
             return;
         }
 
+        const saveButton = row.find('.participant-save-btn');
+
+        saveButton.prop('disabled', true);
 
         $.ajax({
-
             url: window.participantUrls.edit,
-
             type: 'POST',
-
             data: {
                 id: participantId,
                 survey_id: surveyId,
@@ -231,7 +247,6 @@ $(document).ready(function () {
                 last_name: lastName,
                 email: email
             },
-
             dataType: 'json',
 
             success: function (response) {
@@ -239,8 +254,8 @@ $(document).ready(function () {
                 if (response.status === 'success') {
 
                     /*
-                     * Update displayed values
-                     */
+                    * Update displayed values
+                    */
                     row.find('.participant-first-name-text')
                         .text(firstName);
 
@@ -250,23 +265,16 @@ $(document).ready(function () {
                     row.find('.participant-email-text')
                         .text(email);
 
+                    /*
+                    * Hide inputs
+                    */
+                    firstNameInput.addClass('hidden');
+                    lastNameInput.addClass('hidden');
+                    emailInput.addClass('hidden');
 
                     /*
-                     * Hide inputs
-                     */
-                    row.find('.participant-first-name-input')
-                        .addClass('hidden');
-
-                    row.find('.participant-last-name-input')
-                        .addClass('hidden');
-
-                    row.find('.participant-email-input')
-                        .addClass('hidden');
-
-
-                    /*
-                     * Show text
-                     */
+                    * Show text
+                    */
                     row.find('.participant-first-name-text')
                         .removeClass('hidden');
 
@@ -276,20 +284,31 @@ $(document).ready(function () {
                     row.find('.participant-email-text')
                         .removeClass('hidden');
 
-
                     /*
-                     * Restore action buttons
-                     */
+                    * Restore action buttons
+                    */
                     row.find('.participant-edit-actions')
                         .addClass('hidden');
 
                     row.find('.participant-actions')
                         .removeClass('hidden');
 
+                    /*
+                    * Show success message
+                    */
+                    row.find('.participant-email-message')
+                        .addClass('success')
+                        .text(response.message || 'Participant updated successfully.');
+
                 } else {
 
-                    alert(response.message || 'Unable to update participant.');
+                    row.find('.participant-email-message')
+                        .addClass('error')
+                        .text(response.message || 'Unable to update participant.');
                 }
+                setTimeout(function () {
+                        window.location.reload();
+                }, 1000);
             },
 
             error: function (xhr) {
@@ -300,11 +319,16 @@ $(document).ready(function () {
                     message = xhr.responseJSON.message;
                 }
 
-                alert(message);
+                row.find('.participant-email-message')
+                    .addClass('error')
+                    .text(message);
+            },
+
+            complete: function () {
+                saveButton.prop('disabled', false);
             }
         });
     });
-
 
     /*
      * DELETE PARTICIPANT
@@ -318,9 +342,18 @@ $(document).ready(function () {
         // Actual DB ID
         const participantId = row.data('participant-id');
 
+        let participantCount = window.participantUrls.participantCount;
+        console.log('participantCount:', participantCount);
+        
+
 
         if (!participantId) {
             alert('Participant ID not found.');
+            return;
+        }
+
+        if (parseInt(participantCount, 10) === 1) {
+            alert('Schedule requires at least one participant.');
             return;
         }
 

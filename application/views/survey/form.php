@@ -404,7 +404,7 @@
                                     </th>
 
                                     <th style="min-width: 110px; padding: 10px 15px; color: #64748b;">
-                                        Start Date
+                                        Week Day
                                     </th>
 
                                     <th style="min-width: 110px; padding: 10px 15px; color: #64748b;">
@@ -440,14 +440,12 @@
                                         </td>
 
                                         <td style="padding: 11px 15px;">
-                                            <strong style="color: #334155;">
-                                                <?php
-                                                echo date(
-                                                    'l',
-                                                    strtotime($scheduleValue['start_date'])
-                                                );
-                                                ?>
-                                            </strong>
+                                            <?php
+                                            echo date(
+                                                'l',
+                                                strtotime($scheduleValue['start_date'])
+                                            );
+                                            ?>
                                         </td>
 
                                         <td style="padding: 11px 15px;">
@@ -584,22 +582,22 @@
                             <thead>
                                 <tr style="background: #f8fafc;">
 
-                                    <th style="width: 55px; padding: 10px 12px; color: #64748b;">
+                                    <th style="width: 20px; padding: 10px 12px; color: #64748b;">
                                         #
                                     </th>
 
-                                    <th style="padding: 10px 12px; color: #64748b;">
+                                    <th style="width: 80px;" style="padding: 10px 12px; color: #64748b;">
                                         First Name
                                     </th>
 
-                                    <th style="padding: 10px 12px; color: #64748b;">
+                                    <th style="width: 80px;" style="padding: 10px 12px; color: #64748b;">
                                         Last Name
                                     </th>
 
-                                    <th style="padding: 10px 12px; color: #64748b;">
+                                    <th style="width: 130px;" style="padding: 10px 12px; color: #64748b;">
                                         Email
                                     </th>
-                                    <th class="px-4 py-3 text-right text-sm font-medium text-slate-600">
+                                    <th style="width: 20px;" class="px-4 py-3 text-right text-sm font-medium text-slate-600">
                                         Actions
                                     </th>
                                 </tr>
@@ -628,7 +626,7 @@
                                                 type="text"
                                                 class="form-control participant-first-name-input hidden"
                                                 value="<?php echo HTML::chars($p['first_name']); ?>">
-
+                                            <div class="participant-first-name-message participant-field-message"></div>
                                         </td>
 
                                         <!-- Last Name -->
@@ -642,7 +640,7 @@
                                                 type="text"
                                                 class="form-control participant-last-name-input hidden"
                                                 value="<?php echo HTML::chars($p['last_name']); ?>">
-
+                                            <div class="participant-last-name-message participant-field-message"></div>
                                         </td>
 
                                         <!-- Email -->
@@ -656,7 +654,7 @@
                                                 type="email"
                                                 class="form-control participant-email-input hidden"
                                                 value="<?php echo HTML::chars($p['email']); ?>">
-
+                                            <div class="participant-email-message participant-field-message"></div>
                                         </td>
 
                                         <!-- Actions -->
@@ -1076,7 +1074,8 @@
     window.participantUrls = {
         add: '<?= URL::site('participant/add') ?>',
         edit: '<?= URL::site('participant/edit') ?>',
-        delete: '<?= URL::site('participant/delete') ?>'
+        delete: '<?= URL::site('participant/delete') ?>',
+        participantCount: '<?php echo !empty($participants) ? count($participants) : 0; ?>'
     };
 </script>
 
