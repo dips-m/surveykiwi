@@ -3,7 +3,6 @@ $(document).ready(function () {
     /*
      * ADD PARTICIPANT
      */
-
     $(document).on('submit', '#add-participant-form', function (e) {
 
         e.preventDefault();
@@ -13,32 +12,84 @@ $(document).ready(function () {
         var formData = new FormData(form);
 
         var button = $('#add-participant-btn');
-        var message = $('#participant-add-message');
 
-        message.text('').css('color', '');
+        var firstNameInput = $('#participant-first-name');
+        var lastNameInput = $('#participant-last-name');
+        var emailInput = $('#participant-email');
+
+        var firstNameMessage = $('#participant-first-name-message');
+        var lastNameMessage = $('#participant-last-name-message');
+        var emailMessage = $('#participant-email-message');
+
+        /*
+        * Clear previous messages.
+        */
+        $('.participant-field-message')
+            .removeClass('error success')
+            .text('');
+
+        var firstName = firstNameInput.val().trim();
+        var lastName = lastNameInput.val().trim();
+        var email = emailInput.val().trim();
+
+        if (!firstName) {
+            firstNameMessage
+                .addClass('error')
+                .text('First name is required.');
+
+            firstNameInput.focus();
+            return false;
+        }
+
+        if (!lastName) {
+            lastNameMessage
+                .addClass('error')
+                .text('Last name is required.');
+
+            lastNameInput.focus();
+            return false;
+        }
+
+        if (!email) {
+            emailMessage
+                .addClass('error')
+                .text('Email is required.');
+
+            emailInput.focus();
+            return false;
+        }
+
+        /*
+        * Basic email validation.
+        */
+        var emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailPattern.test(email)) {
+            emailMessage
+                .addClass('error')
+                .text('Please enter a valid email address.');
+
+            emailInput.focus();
+            return false;
+        }
 
         button.prop('disabled', true);
 
         $.ajax({
             url: window.participantUrls.add,
-
             type: 'POST',
-
             data: formData,
-
             contentType: false,
-
             processData: false,
-
             dataType: 'json',
 
-            success: function (response) {                
+            success: function (response) {
 
                 if (response.status) {
 
-                    message
-                        .text(response.message)
-                        .css('color', '#16a34a');
+                    emailMessage
+                        .addClass('success')
+                        .text(response.message || 'Participant added successfully.');
 
                     form.reset();
 
@@ -48,12 +99,12 @@ $(document).ready(function () {
 
                 } else {
 
-                    message
+                    emailMessage
+                        .addClass('error')
                         .text(
                             response.message ||
                             'Unable to add participant.'
-                        )
-                        .css('color', '#dc2626');
+                        );
                 }
             },
 
@@ -61,13 +112,13 @@ $(document).ready(function () {
 
                 var response = xhr.responseJSON;
 
-                message
+                emailMessage
+                    .addClass('error')
                     .text(
                         response && response.message
                             ? response.message
                             : 'Unable to add participant.'
-                    )
-                    .css('color', '#dc2626');
+                    );
             },
 
             complete: function () {
