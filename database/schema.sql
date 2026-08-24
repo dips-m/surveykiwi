@@ -166,8 +166,8 @@ COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `survey_schedule_entries` (
     `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
     `survey_schedule_id` bigint UNSIGNED NOT NULL,
-    `start_date` timestamp NOT NULL,
-    `end_date` timestamp NOT NULL,
+    `start_date` datetime NOT NULL,
+    `end_date` datetime NOT NULL,
     `status` enum('past','future') NOT NULL DEFAULT 'future',
     `creator_email_sent` tinyint(1) NOT NULL DEFAULT '0',
     `created_at` timestamp NULL DEFAULT NULL,
