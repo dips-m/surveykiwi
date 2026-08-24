@@ -340,7 +340,34 @@ class Model_Survey
             ->current();
     }
 
-     /**
+    /**
+     * Get a survey by ID, but only if it is currently active —
+     * published AND has a schedule entry whose start_date/end_date
+     * window contains the current datetime.
+     * Used to gate access for anything that should only operate on
+     * a live survey (e.g. the public-facing response form).
+     *
+     * @param integer $survey_id
+     *
+     * @return array|null
+     */
+    public function get_active_survey($survey_id)
+    {
+        return DB::select('surveys.*')
+            ->from('surveys')
+            ->join('survey_schedules', 'inner')
+            ->on('survey_schedules.survey_id', '=', 'surveys.id')
+            ->join('survey_schedule_entries', 'inner')
+            ->on('survey_schedule_entries.survey_schedule_id', '=', 'survey_schedules.id')
+            ->where('surveys.id', '=', $survey_id)
+            ->where('surveys.status', '=', 'published')
+            ->where('survey_schedule_entries.start_date', '<=', DB::expr('NOW()'))
+            ->where('survey_schedule_entries.end_date', '>=', DB::expr('NOW()'))
+            ->execute()
+            ->current();
+    }
+
+    /**
      * Get all questions belonging to a survey, in display order.
      *
      * @param integer $survey_id
