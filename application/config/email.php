@@ -4,14 +4,14 @@ return array(
     'smtp' => array(
         'host' => 'smtp.gmail.com',
         'port' => 587,
-        'username' => 'dpkmurtadak@gmail.com',
-        'password' => 'rtavuxuptmyxzgli',
+        'username' => 'YOUR_SMTP_USERNAME',
+        'password' => 'YOUR_SMTP_PASSWORD',
         'encryption' => 'tls',
         'timeout' => 30,
     ),
 
     'from' => array(
-        'email' => 'dpkmurtadak@gmail.com',
+        'email' => 'no-reply@surveykiwi.test',
         'name' => 'SurveyKiwi',
     ),
 
