@@ -23,7 +23,7 @@ class Controller_SurveyPublic extends Controller
         /*
         * Only published surveys are publicly accessible.
         */
-        $survey = $survey_model->get_published_survey(
+        $survey = $survey_model->get_active_survey(
             $survey_id
         );
 

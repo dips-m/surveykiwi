@@ -6,32 +6,38 @@ It handles survey creation and scheduling, participant import and management, an
 
 ## What Was Delivered
 
-| Task ID | Description | Commit |
-|---|---|---|
-| Task-001 | Initial project setup | [dda03d6](https://github.com/dips-m/surveykiwi/commit/dda03d6d08859d68690265b074dd776bc50ae8a6) |
+
+| Task ID  | Description                                                         | Commit                                                                                          |
+| -------- | ------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| Task-001 | Initial project setup                                               | [dda03d6](https://github.com/dips-m/surveykiwi/commit/dda03d6d08859d68690265b074dd776bc50ae8a6) |
 | Task-002 | Initialize Kohana 3.3 project with Docker and database connectivity | [432b1cd](https://github.com/dips-m/surveykiwi/commit/432b1cd866ed5707c03b02b313a0be2b46313f5f) |
-| Task-003 | Database schema design & seeder | [b2c4f16](https://github.com/dips-m/surveykiwi/commit/b2c4f1658dc9fde5d9c6ece7ac4b6c5a07925d05) |
-| Task-004 | Dashboard creation and survey list with view details page | [f0f02cb](https://github.com/dips-m/surveykiwi/commit/f0f02cbb528396ab0e305283cbaef0307860db6c) |
-| Task-005 | Survey schedule configuration | [ab00d1b](https://github.com/dips-m/surveykiwi/commit/ab00d1b03a28f6158873d42f4e1dbe4f3bdf56cc) |
-| Task-006 | Import participants | [a662842](https://github.com/dips-m/surveykiwi/commit/a6628423d498428907ed4888e1189f1a9fdc10f3) |
-| Task-007 | Schedule list | [7651f1f](https://github.com/dips-m/surveykiwi/commit/7651f1f28409b955135104c15c8b63ad2ca82aa9) |
-| Task-008 | Participants list and actions | [5d0a2f8](https://github.com/dips-m/surveykiwi/commit/5d0a2f8961dcbf5edc72fa053ffadd8d945e5ed5) |
-| Task-009 | Cron job to automate email notification for participants | [74f4ac1](https://github.com/dips-m/surveykiwi/commit/74f4ac1f58629c173182334ed89e58b38c7f5505) |
-| Task-010 | Reminder notification to survey creator | [17ffc8c](https://github.com/dips-m/surveykiwi/commit/17ffc8cba3c50f1ce4f50d15d9ec266df28c929c) |
-| Task-011 | Show past and future schedule | [02d9e21](https://github.com/dips-m/surveykiwi/commit/02d9e21ad00e52ea089793a40c720a7d774bb52a) |
+| Task-003 | Database schema design & seeder                                     | [b2c4f16](https://github.com/dips-m/surveykiwi/commit/b2c4f1658dc9fde5d9c6ece7ac4b6c5a07925d05) |
+| Task-004 | Dashboard creation and survey list with view details page           | [f0f02cb](https://github.com/dips-m/surveykiwi/commit/f0f02cbb528396ab0e305283cbaef0307860db6c) |
+| Task-005 | Survey schedule configuration                                       | [ab00d1b](https://github.com/dips-m/surveykiwi/commit/ab00d1b03a28f6158873d42f4e1dbe4f3bdf56cc) |
+| Task-006 | Import participants                                                 | [a662842](https://github.com/dips-m/surveykiwi/commit/a6628423d498428907ed4888e1189f1a9fdc10f3) |
+| Task-007 | Schedule list                                                       | [7651f1f](https://github.com/dips-m/surveykiwi/commit/7651f1f28409b955135104c15c8b63ad2ca82aa9) |
+| Task-008 | Participants list and actions                                       | [5d0a2f8](https://github.com/dips-m/surveykiwi/commit/5d0a2f8961dcbf5edc72fa053ffadd8d945e5ed5) |
+| Task-009 | Cron job to automate email notification for participants            | [74f4ac1](https://github.com/dips-m/surveykiwi/commit/74f4ac1f58629c173182334ed89e58b38c7f5505) |
+| Task-010 | Reminder notification to survey creator                             | [17ffc8c](https://github.com/dips-m/surveykiwi/commit/17ffc8cba3c50f1ce4f50d15d9ec266df28c929c) |
+| Task-011 | Show past and future schedule                                       | [02d9e21](https://github.com/dips-m/surveykiwi/commit/02d9e21ad00e52ea089793a40c720a7d774bb52a) |
+| Task-012 | User authentication                                                 | [efa8915](https://github.com/dips-m/surveykiwi/commit/efa891522a32a4e9de396c07f571846d284d560d) |
+| Task-013 | Survey management                                                   | [ba5c256](https://github.com/dips-m/surveykiwi/commit/ba5c256fa3282cdc5729561fd0b7c0de597b4f17) |
+
 
 ## Prerequisites and Versions Used
 
-| Component | Version |
-|---|---|
-| PHP | 5.6 |
-| Kohana Framework | 3.3.0 |
-| MariaDB | 10.5 |
-| Web server | Apache |
-| Frontend | Bootstrap 3, jQuery |
-| Docker Desktop | Latest |
-| Git | Latest |
-| WSL 2 | Required if using Windows |
+
+| Component        | Version                   |
+| ---------------- | ------------------------- |
+| PHP              | 5.6                       |
+| Kohana Framework | 3.3.0                     |
+| MariaDB          | 10.5                      |
+| Web server       | Apache                    |
+| Frontend         | Bootstrap 3, jQuery       |
+| Docker Desktop   | Latest                    |
+| Git              | Latest                    |
+| WSL 2            | Required if using Windows |
+
 
 Third-party PHP/JS libraries used are listed in [Third-Party Libraries](#third-party-libraries) below.
 
@@ -141,14 +147,12 @@ Update the SMTP credentials:
     'name'  => 'SurveyKiwi',
 ),
 
-'creator_email' => 'john@example.com',
 ```
 
 Replace:
 
 - `YOUR_SMTP_USERNAME` with your SMTP username.
 - `YOUR_SMTP_PASSWORD` with your SMTP password.
-- `john@example.com` with the email address that should receive survey creator notifications.
 
 ### 7. Open the application
 
@@ -174,6 +178,8 @@ The application was built incrementally, task by task, on top of the existing Ko
 - **Core survey workflows (Task-004–008):** dashboard, survey listing/detail, schedule configuration, and participant management (import via CSV, list/add/edit/delete) were built as standard Kohana MVC controllers/views, following the existing project's naming and directory conventions rather than introducing new patterns.
 - **Notifications (Task-009–010):** email sending was centralized in a single `Service_Mailer` class wrapping PHPMailer, with one shared internal `_send()` routine used by both participant invitations and creator notifications to avoid duplicated SMTP/error-handling logic. A CLI task (`--task=notifications`) drives both flows so it can run on a schedule (cron) in production. Delivery outcomes are persisted per record (e.g. `creator_email_sent`) so re-running the task doesn't resend notifications that already succeeded.
 - **Schedule visibility (Task-011):** extended the existing schedule list query to include both past and upcoming entries rather than only future ones, keeping the same list view/controller rather than introducing a separate page.
+- **User Authentication (Task-012):** implemented secure user authentication mechanisms using Kohana’s built-in session handling and ORM patterns to protect application routes and restrict administrative actions.
+- **Survey Management (Task-013):** expanded core survey capabilities to support end-to-end survey configuration, status transitions, and structured survey management workflows directly within the application.
 
 Throughout, changes were kept minimal and scoped to each task rather than refactoring unrelated code, and existing conventions (Kohana ORM/query builder, Bootstrap 3 UI components, view/controller structure) were reused so the codebase stays consistent for future maintainers.
 
@@ -207,11 +213,9 @@ Below is how to exercise each delivered task against its acceptance criteria.
 
 - From a survey, use the participant import option and upload a CSV file of participants.
 - A sample CSV file is provided at:
-
   ```text
   database/sample/survey_participants-2026.csv
   ```
-
 - **Acceptance criteria:** participants from the CSV are imported and appear in the participant list.
 
 ### Task-007 — Schedule list
@@ -227,11 +231,9 @@ Below is how to exercise each delivered task against its acceptance criteria.
 ### Task-009 — Participant email notifications (cron)
 
 - Run the notification task manually:
-
   ```bash
   docker exec surveykiwi_app php /var/www/html/index.php --task=notifications
   ```
-
 - **Acceptance criteria:**
   - Survey invitation emails are sent to participants for due schedule entries.
   - Each attempt records a sent/failed status.
@@ -240,11 +242,9 @@ Below is how to exercise each delivered task against its acceptance criteria.
 ### Task-010 — Creator reminder notification
 
 - Ensure a survey schedule entry has a start time within the next hour, then run the same notification task:
-
   ```bash
   docker exec surveykiwi_app php /var/www/html/index.php --task=notifications
   ```
-
 - **Acceptance criteria:**
   - The survey creator (configured via `creator_email` in `application/config/email.php`) receives exactly one notification within the hour before the survey's start time.
   - The notification status is recorded (e.g. `creator_email_sent`) so the notification is not sent more than once for the same schedule entry.
@@ -254,6 +254,20 @@ Below is how to exercise each delivered task against its acceptance criteria.
 
 - Navigate to the schedule list view.
 - **Acceptance criteria:** both past and future (upcoming) survey schedule entries are shown.
+
+### Task-012 — User Authentication
+
+- Attempt to access protected application routes while logged out, then log in using valid credentials.
+- **Acceptance criteria:**
+  - Unauthenticated users are redirected to the login page when accessing restricted routes.
+  - Successful authentication unlocks protected features and establishes an active user session.
+
+### Task-013 — Survey Management
+
+- Access the survey management interface to create, update, or modify survey status and properties.
+- **Acceptance criteria:**
+  - Survey management options are accessible and functional.
+  - Updates to survey properties and configurations persist accurately in the database.
 
 ## Notification Task Summary
 
@@ -265,9 +279,12 @@ The notification task (`--task=notifications`) handles:
 
 ## Third-Party Libraries
 
-| Library | Version | License |
-|---|---|---|
-| PHPMailer | 6.8.1 | MIT |
-| Flatpickr | 4.6.13 | MIT |
-| Bootstrap | 3.x | MIT |
-| jQuery | Bundled with Bootstrap 3 setup | MIT |
+
+| Library   | Version                        | License |
+| --------- | ------------------------------ | ------- |
+| PHPMailer | 6.8.1                          | MIT     |
+| Flatpickr | 4.6.13                         | MIT     |
+| Bootstrap | 3.x                            | MIT     |
+| jQuery    | Bundled with Bootstrap 3 setup | MIT     |
+
+
